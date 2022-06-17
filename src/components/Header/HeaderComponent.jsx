@@ -1,34 +1,37 @@
-import styles from "./Header.module.css";
+import * as Styles from "./header-styles";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 
-const HeaderComponent = () => {
+const HeaderComponent = ({ selectComponent }) => {
   const server = "https://d3jmn01ri1fzgl.cloudfront.net";
   const path =
     "/photoadking/webp_thumbnail/5f9294c203d69_template_image_1603441858.webp";
+
+  const backHome = (comp) => {
+    selectComponent(comp);
+  };
   return (
-    <header>
-      <a href="/" disabled>
-        <img src={server + path} alt="Brand Logo" />
+    <Styles.StyledHeader>
+      <Styles.BrandButton onClick={() => backHome("home")}>
+        <Styles.BrandImage src={server + path} alt="Brand Logo" />
         <h2>Company Name</h2>
-      </a>
-      <div className={styles.buttons_container}>
+      </Styles.BrandButton>
+      <Styles.ButtonsContainer>
         <div>
-          <input
-            className={styles.search_input}
+          <Styles.SearchInput
             placeholder="what are you looking for?"
             disabled
           />
-          <button className={styles.search_button} disabled>
+          <Styles.SearchButton disabled>
             <FaSearch />
-          </button>
+          </Styles.SearchButton>
         </div>
         <div className="cart-container">
-          <button className={styles.cart_button}>
+          <Styles.CartButton>
             <FaShoppingCart />
-          </button>
+          </Styles.CartButton>
         </div>
-      </div>
-    </header>
+      </Styles.ButtonsContainer>
+    </Styles.StyledHeader>
   );
 };
 

@@ -1,21 +1,26 @@
 import PropTypes from "prop-types";
 import CategoryCardComponent from "../CategoryCard/CategoryCardComponent";
-import styles from "./CategoryGrid.module.css";
+import { FaArrowRight } from "react-icons/fa";
+import * as Styles from "./category-grid-styles";
 
-const CategoryGridComponent = ({ categories }) => {
+const CategoryGridComponent = ({ categories, selectComponent }) => {
   const categoriesMap = categories.map((category) => (
-    <CategoryCardComponent
-      className={styles.card_style}
-      key={category.id}
-      categoryInfo={category}
-    />
+    <CategoryCardComponent key={category.id} categoryInfo={category} />
   ));
 
+  const switchComponent = (comp) => {
+    selectComponent(comp);
+  };
+
   return (
-    <div className={styles.category_grid}>
-      <h2 className={styles.category_grid_header}>PRODUCT CATEGORIES</h2>
-      <div className={styles.categories_container}>{categoriesMap}</div>
-    </div>
+    <Styles.StyledGrid>
+      <Styles.GridHeader>PRODUCT CATEGORIES</Styles.GridHeader>
+      <Styles.GridContainer>{categoriesMap}</Styles.GridContainer>
+      <Styles.StyledButton onClick={() => switchComponent("pl")}>
+        <span>View all products</span>
+        <FaArrowRight />
+      </Styles.StyledButton>
+    </Styles.StyledGrid>
   );
 };
 
