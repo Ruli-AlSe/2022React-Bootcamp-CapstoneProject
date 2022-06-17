@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import ProductTileComponent from "../ProductTile/ProductTileComponent";
-import PaginationComponent from "../Pagination/PaginationComponent";
 import * as Styles from "./product-grid-styles";
 
 export default function ProductGridComponent({ products }) {
@@ -17,9 +16,6 @@ export default function ProductGridComponent({ products }) {
   return (
     <Styles.Styledcontainer>
       <Styles.ProductsContainer>{productsMap}</Styles.ProductsContainer>
-      <Styles.PaginationContainer>
-        <PaginationComponent />
-      </Styles.PaginationContainer>
     </Styles.Styledcontainer>
   );
 }

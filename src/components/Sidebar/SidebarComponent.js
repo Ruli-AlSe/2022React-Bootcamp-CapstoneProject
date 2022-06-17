@@ -2,40 +2,59 @@ import PropTypes from "prop-types";
 import * as Styles from "./sidebar-styles";
 
 export default function SidebarComponent({ categories, setFilters }) {
-  const handleFilter = (e) => {
-    if (e.target.name !== undefined) {
-      if (e.target.checked === true) {
-        setFilters((oldFilters) => [
-          ...oldFilters,
-          e.target.name.toLowerCase(),
-        ]);
-        e.target.parentElement.setAttribute(
-          "style",
-          "background-color: #ffaa07d9; color: white"
-        );
-      } else {
-        setFilters((oldFilters) =>
-          oldFilters.filter((filter) => filter !== e.target.name.toLowerCase())
-        );
-        e.target.parentElement.setAttribute("style", "");
-      }
+  const updateFilters = (value, action) => {
+    if (action === "add") {
+      setFilters((oldFilters) => [...oldFilters, value]);
+    } else {
+      setFilters((oldFilters) =>
+        oldFilters.filter((filter) => filter !== value)
+      );
+    }
+  };
+
+  const getCheckbox = (target) => {
+    var elem;
+    switch (target.tagName) {
+      case "LI":
+        elem = target.querySelector("input[type='checkbox']");
+        break;
+      case "LABEL":
+        elem = target.parentElement.querySelector("input[type='checkbox']");
+        break;
+      default:
+        elem = target;
+        break;
+    }
+    return elem;
+  };
+
+  const handleClick = (e) => {
+    var elem = getCheckbox(e.target);
+    elem.checked = !elem.checked;
+
+    if (elem.checked === true) {
+      elem.parentElement.classList.add("checked");
+      updateFilters(elem.dataset.id, "add");
+    } else {
+      updateFilters(elem.dataset.id);
+      elem.parentElement.classList.remove("checked");
     }
   };
 
   const categoriesMap = categories.map((category) => (
     <Styles.ListItem
-      name={category.data.name}
-      onClick={(e) => handleFilter(e)}
+      onClick={(e) => handleClick(e)}
       htmlFor={category.data.name}
       key={category.id}
     >
       <Styles.Label name={category.data.name} htmlFor={category.data.name}>
         {category.data.name}
       </Styles.Label>
-      <Styles.StyledInput
+      <Styles.CheckBox
         type="checkbox"
-        id={category.data.name}
+        data-id={category.id}
         name={category.data.name}
+        defaultChecked={false}
       />
     </Styles.ListItem>
   ));

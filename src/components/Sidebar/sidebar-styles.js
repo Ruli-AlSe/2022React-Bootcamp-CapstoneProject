@@ -20,7 +20,7 @@ export const FiltersContainer = styled.ul`
 
   @media screen and (max-width: 1024px) {
     flex-direction: row;
-    width: 100%;
+    width: 90%;
     height: 11rem;
     align-items: center;
     overflow: hidden;
@@ -39,8 +39,14 @@ export const ListItem = styled.li`
   display: flex;
   align-items: center;
   margin-right: 20px;
+  cursor: pointer;
 
   &:hover {
+    background-color: #ffaa07d9;
+    color: white;
+  }
+
+  &.checked {
     background-color: #ffaa07d9;
     color: white;
   }
@@ -66,7 +72,8 @@ export const Label = styled.label`
   }
 `;
 
-export const StyledInput = styled.input`
+export const CheckBox = styled.input`
+  cursor: pointer;
   width: 25px;
   height: 25px;
 `;
