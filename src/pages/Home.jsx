@@ -3,15 +3,14 @@ import FeaturedProductsComponent from "../components/FeaturedProducts/FeaturedPr
 import CategoryGridComponent from "../components/CategoryGrid/CategoryGridComponent";
 import LoadingComponent from "../components/Loading/LoadingComponent";
 import { useState, useEffect } from "react";
-const productCategories = require("../mocks/en-us/product-categories.json");
 const featuredProducts = require("../mocks/en-us/featured-products.json");
 
-const Home = ({ isLoading, data }) => {
+const Home = ({ isLoading, data, isLoadingCategories, dataCategories }) => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [firstTileIdx, setFirstTileIdx] = useState(0);
   let lastTileIdx = firstTileIdx + 4;
   const bannerResults = data.results;
-  const categoryResults = productCategories.results;
+  const categoryResults = dataCategories.results;
   const productResults = featuredProducts.results;
 
   const nextSlide = () => {
@@ -60,7 +59,10 @@ const Home = ({ isLoading, data }) => {
           isLoading={isLoading}
         />
       )}
-      <CategoryGridComponent categories={categoryResults} />
+      {isLoadingCategories && <LoadingComponent />}
+      {!isLoadingCategories && (
+        <CategoryGridComponent categories={categoryResults} />
+      )}
       <FeaturedProductsComponent
         products={productResults}
         firstTileIdx={firstTileIdx}

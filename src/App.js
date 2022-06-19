@@ -4,20 +4,29 @@ import Home from "./pages/Home";
 import ProductList from "./pages/ProductList/ProductList";
 import { Routes, Route } from "react-router-dom";
 import { useFeaturedBanners } from "./utils/hooks/useFeaturedBanners";
+import { useCategories } from "./utils/hooks/useCategories";
 import "./App.css";
-import { useEffect } from "react";
 
 function App() {
   const { data, isLoading } = useFeaturedBanners();
-  console.log(data, isLoading);
-
-  useEffect(() => {}, [data]);
+  const { dataCategories, isLoadingCategories } = useCategories();
+  console.log("*** app: ", dataCategories);
 
   return (
     <div className="App">
       <HeaderComponent />
       <Routes>
-        <Route path="/" element={<Home isLoading={isLoading} data={data} />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              isLoading={isLoading}
+              data={data}
+              isLoadingCategories={isLoadingCategories}
+              dataCategories={dataCategories}
+            />
+          }
+        />
         <Route path="/home" element={<Home />} isLoading={isLoading} />
         <Route
           path="/products"

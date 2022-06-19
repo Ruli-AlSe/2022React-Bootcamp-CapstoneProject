@@ -13,7 +13,6 @@ export default function ProductList() {
 
   let results = products.results;
   if (filters.length > 0) {
-    console.log(filters);
     results = products.results.filter((product) =>
       filters.includes(product.data.category.id)
     );
