@@ -1,16 +1,16 @@
 import SliderComponent from "../components/Slider/SliderComponent";
 import FeaturedProductsComponent from "../components/FeaturedProducts/FeaturedProductsComponent";
 import CategoryGridComponent from "../components/CategoryGrid/CategoryGridComponent";
-import { useState } from "react";
-const featuredBanners = require("../mocks/en-us/featured-banners.json");
+import LoadingComponent from "../components/Loading/LoadingComponent";
+import { useState, useEffect } from "react";
 const productCategories = require("../mocks/en-us/product-categories.json");
 const featuredProducts = require("../mocks/en-us/featured-products.json");
 
-const Home = ({ selectComponent }) => {
+const Home = ({ isLoading, data }) => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [firstTileIdx, setFirstTileIdx] = useState(0);
   let lastTileIdx = firstTileIdx + 4;
-  const bannerResults = featuredBanners.results;
+  const bannerResults = data.results;
   const categoryResults = productCategories.results;
   const productResults = featuredProducts.results;
 
@@ -46,18 +46,21 @@ const Home = ({ selectComponent }) => {
     lastTileIdx = firstTileIdx + 4;
   };
 
+  useEffect(() => {}, [isLoading]);
+
   return (
     <div>
-      <SliderComponent
-        images={bannerResults}
-        prevSlide={prevSlide}
-        nextSlide={nextSlide}
-        activeBanner={slideIndex}
-      />
-      <CategoryGridComponent
-        categories={categoryResults}
-        selectComponent={selectComponent}
-      />
+      {isLoading && <LoadingComponent />}
+      {!isLoading && (
+        <SliderComponent
+          images={bannerResults}
+          prevSlide={prevSlide}
+          nextSlide={nextSlide}
+          activeBanner={slideIndex}
+          isLoading={isLoading}
+        />
+      )}
+      <CategoryGridComponent categories={categoryResults} />
       <FeaturedProductsComponent
         products={productResults}
         firstTileIdx={firstTileIdx}
