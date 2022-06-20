@@ -5,12 +5,16 @@ import ProductList from "./pages/ProductList/ProductList";
 import { Routes, Route } from "react-router-dom";
 import { useFeaturedBanners } from "./utils/hooks/useFeaturedBanners";
 import { useCategories } from "./utils/hooks/useCategories";
+import { useFeaturedProducts } from "./utils/hooks/useFeaturedProducts";
 import "./App.css";
+import { useState } from "react";
 
 function App() {
-  const { data, isLoading } = useFeaturedBanners();
+  const { dataBanners, isLoadingBanners } = useFeaturedBanners();
   const { dataCategories, isLoadingCategories } = useCategories();
-  console.log("*** app: ", dataCategories);
+  const { dataProducts, isLoadingProducts } = useFeaturedProducts();
+
+  useState(() => {}, [dataBanners, dataCategories, dataProducts]);
 
   return (
     <div className="App">
@@ -20,18 +24,31 @@ function App() {
           path="/"
           element={
             <Home
-              isLoading={isLoading}
-              data={data}
+              isLoadingBanners={isLoadingBanners}
+              dataBanners={dataBanners}
               isLoadingCategories={isLoadingCategories}
               dataCategories={dataCategories}
+              isLoadingProducts={isLoadingProducts}
+              dataProducts={dataProducts}
             />
           }
         />
-        <Route path="/home" element={<Home />} isLoading={isLoading} />
+        <Route
+          path="/home"
+          element={
+            <Home
+              isLoadingBanners={isLoadingBanners}
+              dataBanners={dataBanners}
+              isLoadingCategories={isLoadingCategories}
+              dataCategories={dataCategories}
+              isLoadingProducts={isLoadingProducts}
+              dataProducts={dataProducts}
+            />
+          }
+        />
         <Route
           path="/products"
-          element={<ProductList />}
-          isLoading={isLoading}
+          element={<ProductList isLoadingBanners={isLoadingBanners} />}
         />
       </Routes>
       <FooterComponent />

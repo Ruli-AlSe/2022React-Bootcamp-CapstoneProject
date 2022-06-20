@@ -3,15 +3,21 @@ import FeaturedProductsComponent from "../components/FeaturedProducts/FeaturedPr
 import CategoryGridComponent from "../components/CategoryGrid/CategoryGridComponent";
 import LoadingComponent from "../components/Loading/LoadingComponent";
 import { useState, useEffect } from "react";
-const featuredProducts = require("../mocks/en-us/featured-products.json");
 
-const Home = ({ isLoading, data, isLoadingCategories, dataCategories }) => {
+const Home = ({
+  isLoadingBanners,
+  dataBanners,
+  isLoadingCategories,
+  dataCategories,
+  isLoadingProducts,
+  dataProducts,
+}) => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [firstTileIdx, setFirstTileIdx] = useState(0);
   let lastTileIdx = firstTileIdx + 4;
-  const bannerResults = data.results;
+  const bannerResults = dataBanners.results;
   const categoryResults = dataCategories.results;
-  const productResults = featuredProducts.results;
+  const productResults = dataProducts.results;
 
   const nextSlide = () => {
     if (slideIndex !== bannerResults.length - 1) {
@@ -45,31 +51,34 @@ const Home = ({ isLoading, data, isLoadingCategories, dataCategories }) => {
     lastTileIdx = firstTileIdx + 4;
   };
 
-  useEffect(() => {}, [isLoading]);
+  useEffect(() => {}, [isLoadingBanners]);
 
   return (
     <div>
-      {isLoading && <LoadingComponent />}
-      {!isLoading && (
+      {isLoadingBanners && <LoadingComponent />}
+      {!isLoadingBanners && (
         <SliderComponent
           images={bannerResults}
           prevSlide={prevSlide}
           nextSlide={nextSlide}
           activeBanner={slideIndex}
-          isLoading={isLoading}
+          isLoadingBanners={isLoadingBanners}
         />
       )}
       {isLoadingCategories && <LoadingComponent />}
       {!isLoadingCategories && (
         <CategoryGridComponent categories={categoryResults} />
       )}
-      <FeaturedProductsComponent
-        products={productResults}
-        firstTileIdx={firstTileIdx}
-        lastTileIdx={lastTileIdx}
-        nextProductGrid={nextProductGrid}
-        prevProductGrid={prevProductGrid}
-      />
+      {isLoadingProducts && <LoadingComponent />}
+      {!isLoadingProducts && (
+        <FeaturedProductsComponent
+          products={productResults}
+          firstTileIdx={firstTileIdx}
+          lastTileIdx={lastTileIdx}
+          nextProductGrid={nextProductGrid}
+          prevProductGrid={prevProductGrid}
+        />
+      )}
     </div>
   );
 };

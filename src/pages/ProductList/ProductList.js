@@ -7,7 +7,7 @@ import * as Styles from "./product-list-styles";
 const productCategories = require("../../mocks/en-us/product-categories.json");
 const products = require("../../mocks/en-us/products.json");
 
-export default function ProductList() {
+export default function ProductList({ isLoadingCategories }) {
   const [filters, setFilters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
