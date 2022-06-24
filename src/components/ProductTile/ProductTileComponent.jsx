@@ -3,9 +3,9 @@ import * as Styles from "./product-tile-styles";
 
 const ProductTileComponent = ({
   productInfo,
-  index,
-  firstTileIdx,
-  lastTileIdx,
+  index = 0,
+  firstTileIdx = 0,
+  lastTileIdx = 1,
 }) => {
   const displayStyle =
     index >= firstTileIdx && index <= lastTileIdx
@@ -21,7 +21,7 @@ const ProductTileComponent = ({
       <Styles.InformationContainer>
         <Styles.TileHeader>{productInfo.data.name}</Styles.TileHeader>
         <p>{productInfo.data.category.slug}</p>
-        <p>$ {productInfo.data.price}</p>
+        <p>$ {productInfo.data.price.toFixed(2)}</p>
       </Styles.InformationContainer>
     </Styles.StyledTile>
   );
@@ -38,9 +38,9 @@ ProductTileComponent.propTypes = {
     id: PropTypes.string.isRequired,
     href: PropTypes.string.isRequired,
   }).isRequired,
-  index: PropTypes.number.isRequired,
-  firstTileIdx: PropTypes.number.isRequired,
-  lastTileIdx: PropTypes.number.isRequired,
+  index: PropTypes.number,
+  firstTileIdx: PropTypes.number,
+  lastTileIdx: PropTypes.number,
 };
 
 export default ProductTileComponent;
