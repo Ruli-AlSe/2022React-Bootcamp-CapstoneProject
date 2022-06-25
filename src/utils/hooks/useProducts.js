@@ -19,7 +19,7 @@ export function useProducts(productType = "general") {
     const apiUrl = {
       general: `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
         '[[at(document.type, "product")]]'
-      )}&lang=en-us&pageSize=30`,
+      )}&lang=en-us&pageSize=12`,
       featured: `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
         '[[at(document.type, "product")]]'
       )}&q=${encodeURIComponent(

@@ -37,6 +37,7 @@ export default function ProductList() {
             <SidebarComponent
               categories={dataCategories.results}
               setFilters={setFilters}
+              filters={filters}
             />
           </Styles.Sidebar>
           <Styles.Products>
