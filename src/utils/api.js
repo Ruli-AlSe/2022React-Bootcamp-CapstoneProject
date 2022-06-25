@@ -1,16 +1,15 @@
-export async function getProducts(productsHook, apiUrl) {
+export async function getDataFromAPI(setData, apiUrl, controller) {
   try {
-    const controller = new AbortController();
-    productsHook({ dataProducts: {}, isLoadingProducts: true });
+    setData({ data: {}, isLoading: true });
 
     const response = await fetch(apiUrl, {
       signal: controller.signal,
     });
-    const dataProducts = await response.json();
+    const data = await response.json();
 
-    productsHook({ dataProducts, isLoadingProducts: false });
+    setData({ data, isLoading: false });
   } catch (err) {
-    productsHook({ dataProducts: {}, isLoadingProducts: false });
+    setData({ data: {}, isLoading: false });
     console.error(err);
   }
 }

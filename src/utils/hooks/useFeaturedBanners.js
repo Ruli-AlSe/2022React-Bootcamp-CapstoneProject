@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
+import { getDataFromAPI } from "../api";
 
 export function useFeaturedBanners() {
   const { ref: apiRef, isLoadingBanners: isApiMetadataLoading } =
@@ -10,35 +11,21 @@ export function useFeaturedBanners() {
     isLoadingBanners: true,
   }));
 
+  const handleSetBanners = ({ data, isLoading }) => {
+    setFeaturedBanners({ dataBanners: data, isLoadingBanners: isLoading });
+  };
+
   useEffect(() => {
+    const apiUrl = `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
+      '[[at(document.type, "banner")]]'
+    )}&lang=en-us&pageSize=5`;
     if (!apiRef || isApiMetadataLoading) {
       return () => {};
     }
 
     const controller = new AbortController();
 
-    async function getFeaturedBanners() {
-      try {
-        setFeaturedBanners({ dataBanners: {}, isLoadingBanners: true });
-
-        const response = await fetch(
-          `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
-            '[[at(document.type, "banner")]]'
-          )}&lang=en-us&pageSize=5`,
-          {
-            signal: controller.signal,
-          }
-        );
-        const dataBanners = await response.json();
-
-        setFeaturedBanners({ dataBanners, isLoadingBanners: false });
-      } catch (err) {
-        setFeaturedBanners({ dataBanners: {}, isLoadingBanners: false });
-        console.error(err);
-      }
-    }
-
-    getFeaturedBanners();
+    getDataFromAPI(handleSetBanners, apiUrl, controller);
 
     return () => {
       controller.abort();

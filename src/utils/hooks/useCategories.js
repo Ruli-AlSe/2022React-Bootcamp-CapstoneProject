@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
+import { getDataFromAPI } from "../api";
 
 export function useCategories() {
   const { ref: apiRef, isLoadingCategories: isApiMetadataLoading } =
@@ -9,36 +10,21 @@ export function useCategories() {
     dataCategories: {},
     isLoadingCategories: true,
   }));
+  const handleSetCategories = ({ data, isLoading }) => {
+    setCategories({ dataCategories: data, isLoadingCategories: isLoading });
+  };
 
   useEffect(() => {
+    const apiUrl = `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
+      '[[at(document.type, "category")]]'
+    )}&lang=en-us&pageSize=30`;
+
     if (!apiRef || isApiMetadataLoading) {
       return () => {};
     }
-
     const controller = new AbortController();
 
-    async function getCategories() {
-      try {
-        setCategories({ dataCategories: {}, isLoadingCategories: true });
-
-        const response = await fetch(
-          `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
-            '[[at(document.type, "category")]]'
-          )}&lang=en-us&pageSize=30`,
-          {
-            signal: controller.signal,
-          }
-        );
-        const dataCategories = await response.json();
-
-        setCategories({ dataCategories, isLoadingCategories: false });
-      } catch (err) {
-        setCategories({ dataCategories: {}, isLoadingCategories: false });
-        console.error(err);
-      }
-    }
-
-    getCategories();
+    getDataFromAPI(handleSetCategories, apiUrl, controller);
 
     return () => {
       controller.abort();

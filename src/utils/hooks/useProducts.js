@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
-import { getProducts } from "../api";
+import { getDataFromAPI } from "../api";
 
 export function useProducts(productType = "general") {
   const { ref: apiRef, isLoadingProducts: isApiMetadataLoading } =
@@ -11,8 +11,8 @@ export function useProducts(productType = "general") {
     isLoadingProducts: true,
   }));
 
-  const handleSetProducts = ({ dataProducts, isLoadingProducts }) => {
-    setProducts({ dataProducts, isLoadingProducts });
+  const handleSetProducts = ({ data, isLoading }) => {
+    setProducts({ dataProducts: data, isLoadingProducts: isLoading });
   };
 
   useEffect(() => {
@@ -26,12 +26,17 @@ export function useProducts(productType = "general") {
         '[[at(document.tags, ["Featured"])]]'
       )}&lang=en-us&pageSize=16`,
     };
+    const controller = new AbortController();
 
     if (!apiRef || isApiMetadataLoading) {
       return () => {};
     }
 
-    getProducts(handleSetProducts, apiUrl[productType]);
+    getDataFromAPI(handleSetProducts, apiUrl[productType], controller);
+
+    return () => {
+      controller.abort();
+    };
   }, [apiRef, isApiMetadataLoading, productType]);
 
   return products;
