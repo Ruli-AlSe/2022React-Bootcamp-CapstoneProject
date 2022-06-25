@@ -4,13 +4,13 @@ import CategoryGridComponent from "../components/CategoryGrid/CategoryGridCompon
 import LoadingComponent from "../components/Loading/LoadingComponent";
 import { useState, useEffect } from "react";
 import { useFeaturedBanners } from "../utils/hooks/useFeaturedBanners";
-import { useFeaturedProducts } from "../utils/hooks/useFeaturedProducts";
+import { useProducts } from "../utils/hooks/useProducts";
 import { useCategories } from "../utils/hooks/useCategories";
 
 const Home = () => {
   const { dataBanners, isLoadingBanners } = useFeaturedBanners();
   const { dataCategories, isLoadingCategories } = useCategories();
-  const { dataProducts, isLoadingProducts } = useFeaturedProducts();
+  const { dataProducts, isLoadingProducts } = useProducts("featured");
   const [slideIndex, setSlideIndex] = useState(0);
   const [firstTileIdx, setFirstTileIdx] = useState(0);
   const [isLoading, setIsLoading] = useState(true);

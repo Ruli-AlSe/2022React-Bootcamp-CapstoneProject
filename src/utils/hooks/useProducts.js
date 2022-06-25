@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
+import { getProducts } from "../api";
 
-export function useProducts() {
+export function useProducts(productType = "general") {
   const { ref: apiRef, isLoadingProducts: isApiMetadataLoading } =
     useLatestAPI();
   const [products, setProducts] = useState(() => ({
@@ -10,40 +11,28 @@ export function useProducts() {
     isLoadingProducts: true,
   }));
 
+  const handleSetProducts = ({ dataProducts, isLoadingProducts }) => {
+    setProducts({ dataProducts, isLoadingProducts });
+  };
+
   useEffect(() => {
+    const apiUrl = {
+      general: `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
+        '[[at(document.type, "product")]]'
+      )}&lang=en-us&pageSize=30`,
+      featured: `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
+        '[[at(document.type, "product")]]'
+      )}&q=${encodeURIComponent(
+        '[[at(document.tags, ["Featured"])]]'
+      )}&lang=en-us&pageSize=16`,
+    };
+
     if (!apiRef || isApiMetadataLoading) {
       return () => {};
     }
 
-    const controller = new AbortController();
-
-    async function getProducts() {
-      try {
-        setProducts({ dataProducts: {}, isLoadingProducts: true });
-
-        const response = await fetch(
-          `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
-            '[[at(document.type, "product")]]'
-          )}&lang=en-us&pageSize=30`,
-          {
-            signal: controller.signal,
-          }
-        );
-        const dataProducts = await response.json();
-
-        setProducts({ dataProducts, isLoadingProducts: false });
-      } catch (err) {
-        setProducts({ dataProducts: {}, isLoadingProducts: false });
-        console.error(err);
-      }
-    }
-
-    getProducts();
-
-    return () => {
-      controller.abort();
-    };
-  }, [apiRef, isApiMetadataLoading]);
+    getProducts(handleSetProducts, apiUrl[productType]);
+  }, [apiRef, isApiMetadataLoading, productType]);
 
   return products;
 }
