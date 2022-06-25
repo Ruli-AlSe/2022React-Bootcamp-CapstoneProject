@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import * as Styles from "./product-tile-styles";
 
 const ProductTileComponent = ({
@@ -19,10 +20,20 @@ const ProductTileComponent = ({
         alt={productInfo.data.mainimage.alt}
       />
       <Styles.InformationContainer>
-        <Styles.TileHeader>{productInfo.data.name}</Styles.TileHeader>
+        <Styles.TileHeader>
+          <Link className="link-product-name" to="/product">
+            {productInfo.data.name}
+          </Link>
+        </Styles.TileHeader>
         <p>{productInfo.data.category.slug}</p>
         <p>$ {productInfo.data.price.toFixed(2)}</p>
       </Styles.InformationContainer>
+      <Styles.ActionsContainer>
+        <Link className="view-all-link" to="/product">
+          View Details
+        </Link>
+        <Styles.AddToCartBtn>Add To Cart</Styles.AddToCartBtn>
+      </Styles.ActionsContainer>
     </Styles.StyledTile>
   );
 };
