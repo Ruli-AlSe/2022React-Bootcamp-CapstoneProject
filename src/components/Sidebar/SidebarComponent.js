@@ -2,7 +2,12 @@ import PropTypes from "prop-types";
 import { FaTimesCircle } from "react-icons/fa";
 import * as Styles from "./sidebar-styles";
 
-export default function SidebarComponent({ categories, setFilters, filters }) {
+export default function SidebarComponent({
+  categories,
+  setFilters,
+  filters,
+  setCurrentPage,
+}) {
   const updateFilters = (value, action) => {
     if (action === "add") {
       setFilters((oldFilters) => [...oldFilters, value]);
@@ -11,6 +16,8 @@ export default function SidebarComponent({ categories, setFilters, filters }) {
         oldFilters.filter((filter) => filter !== value)
       );
     }
+
+    setCurrentPage(1);
   };
 
   const getCheckbox = (target) => {

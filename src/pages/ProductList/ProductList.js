@@ -10,22 +10,56 @@ import { useProducts } from "../../utils/hooks/useProducts";
 export default function ProductList() {
   const [filters, setFilters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [productsPerPage, setProductsPerPage] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [productsRendered, setProductsRendered] = useState([]);
   const { dataCategories, isLoadingCategories } = useCategories();
   const { dataProducts, isLoadingProducts } = useProducts();
 
-  let results = dataProducts.results;
-  if (filters.length > 0) {
-    results = dataProducts.results.filter((product) =>
-      filters.includes(product.data.category.id)
-    );
-  }
-
   useEffect(() => {
+    setIsLoading(true);
     if (!isLoadingCategories && !isLoadingProducts) {
       window.scrollTo(0, 0);
-      setIsLoading(false);
+
+      function filteredProducts() {
+        let results = dataProducts.results;
+        if (filters.length > 0) {
+          results = dataProducts.results.filter((product) =>
+            filters.includes(product.data.category.id)
+          );
+        }
+
+        return results;
+      }
+
+      function productsToShow(products) {
+        setTotalPages(Math.ceil(results.length / productsPerPage));
+        const startIdx = (currentPage - 1) * productsPerPage;
+        const endIdx = currentPage * productsPerPage;
+        setProductsRendered(results.slice(startIdx, endIdx));
+        setIsLoading(false);
+      }
+
+      const results = filteredProducts();
+
+      productsToShow(results);
     }
-  }, [isLoadingCategories, isLoadingProducts]);
+  }, [
+    isLoadingCategories,
+    isLoadingProducts,
+    dataProducts,
+    filters,
+    productsPerPage,
+    currentPage,
+  ]);
+
+  const onChangePagination = (products) => {
+    const startIdx = (currentPage - 1) * productsPerPage;
+    const endIdx = currentPage * productsPerPage;
+
+    setProductsRendered(products.slice(startIdx, endIdx));
+  };
 
   return (
     <Styles.ProductListPage>
@@ -38,11 +72,28 @@ export default function ProductList() {
               categories={dataCategories.results}
               setFilters={setFilters}
               filters={filters}
+              setCurrentPage={setCurrentPage}
             />
           </Styles.Sidebar>
           <Styles.Products>
-            <ProductGridComponent className="products" products={results} />
-            <PaginationComponent />
+            <PaginationComponent
+              products={productsRendered}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              onChangePagination={onChangePagination}
+            />
+            <ProductGridComponent
+              className="products"
+              products={productsRendered}
+            />
+            <PaginationComponent
+              products={productsRendered}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              onChangePagination={onChangePagination}
+            />
           </Styles.Products>
         </Styles.ContentContainer>
       )}
