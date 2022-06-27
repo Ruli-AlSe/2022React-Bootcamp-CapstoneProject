@@ -21,7 +21,7 @@ const ProductTileComponent = ({
       />
       <Styles.InformationContainer>
         <Styles.TileHeader>
-          <Link className="link-product-name" to="/product">
+          <Link className="link-product-name" to={`/product/${productInfo.id}`}>
             {productInfo.data.name}
           </Link>
         </Styles.TileHeader>
@@ -29,7 +29,7 @@ const ProductTileComponent = ({
         <p>$ {productInfo.data.price.toFixed(2)}</p>
       </Styles.InformationContainer>
       <Styles.ActionsContainer>
-        <Link className="view-all-link" to="/product">
+        <Link className="view-all-link" to={`/product/${productInfo.id}`}>
           View Details
         </Link>
         <Styles.AddToCartBtn>Add To Cart</Styles.AddToCartBtn>

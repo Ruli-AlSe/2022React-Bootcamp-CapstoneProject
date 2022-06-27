@@ -10,7 +10,7 @@ import { useProducts } from "../../utils/hooks/useProducts";
 export default function ProductList() {
   const [filters, setFilters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [productsPerPage, setProductsPerPage] = useState(12);
+  const [productsPerPage] = useState(12);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [productsRendered, setProductsRendered] = useState([]);
