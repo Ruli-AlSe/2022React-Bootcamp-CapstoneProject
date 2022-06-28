@@ -12,11 +12,50 @@ export const ProductDataContainer = styled.div`
     padding-left: 40px;
     flex-basis: 60%;
   }
+
+  @media screen and (max-width: 780px) {
+    & .image-gallery {
+      padding-left: 0;
+    }
+
+    & .image-gallery .image-gallery-left-nav,
+    & .image-gallery .image-gallery-right-nav {
+      display: none;
+    }
+  }
+`;
+
+export const Container = styled.div`
+  display: flex;
+
+  & h1.mobile {
+    display: none;
+  }
+
+  @media screen and (max-width: 780px) {
+    flex-direction: column;
+
+    & h1.mobile {
+      display: block;
+    }
+  }
 `;
 
 export const ProductInfoContainer = styled.div`
   flex-basis: 40%;
   margin-left: 90px;
+
+  & h1.desktop {
+    display: block;
+  }
+
+  @media screen and (max-width: 780px) {
+    margin-left: 0;
+
+    & h1.desktop {
+      display: none;
+    }
+  }
 `;
 
 export const Tags = styled.div`
@@ -24,6 +63,24 @@ export const Tags = styled.div`
   padding-right: 50px;
   margin: 35px 0;
   font-weight: 500;
+
+  &.mobile {
+    display: none;
+  }
+
+  &.desktop {
+    display: block;
+  }
+
+  @media screen and (max-width: 780px) {
+    &.mobile {
+      display: block;
+    }
+
+    &.desktop {
+      display: none;
+    }
+  }
 `;
 
 export const DescriptiveInfo = styled.div`
@@ -33,6 +90,11 @@ export const DescriptiveInfo = styled.div`
   text-align: left;
   padding-top: 2rem;
   font-size: 20px;
+
+  @media screen and (max-width: 780px) {
+    margin-right: 25px;
+    margin-left: 25px;
+  }
 `;
 
 export const ActionsContainer = styled.div`

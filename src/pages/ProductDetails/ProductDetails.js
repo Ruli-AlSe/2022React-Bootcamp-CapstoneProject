@@ -35,18 +35,24 @@ export default function ProductDetails() {
       {isLoading && <LoadingComponent />}
       {!isLoading && (
         <Styles.ProductDataContainer>
-          <div style={{ display: "flex" }}>
-            <ImageGallery
-              items={productImages}
-              autoPlay={false}
-              showPlayButton={false}
-              lazyLoad={true}
-            />
-            <Styles.ProductInfoContainer>
-              <Styles.Tags>
+          <Styles.Container>
+            <Styles.Container>
+              <Styles.Tags className="mobile">
                 <span>{productInfo.tags.join(" | ").toUpperCase()}</span>
               </Styles.Tags>
-              <h1>{productInfo.data.name}</h1>
+              <h1 className="mobile">{productInfo.data.name}</h1>
+              <ImageGallery
+                items={productImages}
+                autoPlay={false}
+                showPlayButton={false}
+                lazyLoad={true}
+              />
+            </Styles.Container>
+            <Styles.ProductInfoContainer>
+              <Styles.Tags className="desktop">
+                <span>{productInfo.tags.join(" | ").toUpperCase()}</span>
+              </Styles.Tags>
+              <h1 className="desktop">{productInfo.data.name}</h1>
               <Styles.DescriptiveInfo>
                 <span className="featured-spec">
                   <Styles.Label>{`CATEGORY: `}</Styles.Label>
@@ -88,7 +94,7 @@ export default function ProductDetails() {
                 <AddToCartButton />
               </Styles.ActionsContainer>
             </Styles.ProductInfoContainer>
-          </div>
+          </Styles.Container>
           <Styles.Description>
             {productInfo.data.description[0].text}
           </Styles.Description>
