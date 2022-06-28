@@ -28,6 +28,11 @@ export const ProductDataContainer = styled.div`
 export const Container = styled.div`
   display: flex;
 
+  & .product-images {
+    flex-direction: column;
+    flex-basis: 50%;
+  }
+
   & h1.mobile {
     display: none;
   }
@@ -42,7 +47,7 @@ export const Container = styled.div`
 `;
 
 export const ProductInfoContainer = styled.div`
-  flex-basis: 40%;
+  flex-basis: 50%;
   margin-left: 90px;
 
   & h1.desktop {

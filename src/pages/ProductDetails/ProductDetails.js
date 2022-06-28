@@ -36,7 +36,7 @@ export default function ProductDetails() {
       {!isLoading && (
         <Styles.ProductDataContainer>
           <Styles.Container>
-            <Styles.Container>
+            <Styles.Container className="product-images">
               <Styles.Tags className="mobile">
                 <span>{productInfo.tags.join(" | ").toUpperCase()}</span>
               </Styles.Tags>
