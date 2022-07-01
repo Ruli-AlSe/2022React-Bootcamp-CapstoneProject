@@ -4,24 +4,31 @@ import * as Styles from "./sidebar-styles";
 
 export default function SidebarComponent({
   categories,
-  setFilters,
-  filters,
   setCurrentPage,
+  setFiltersData,
+  filtersData,
+  searchParams,
 }) {
-  const updateFilters = (value, action) => {
+  const updateFilters = (elem, action) => {
     if (action === "add") {
-      setFilters((oldFilters) => [...oldFilters, value]);
+      const key = elem.dataset.id;
+      const value = elem.name;
+      const item = {};
+      item[key] = value.toLowerCase();
+      setFiltersData((oldData) => ({ ...oldData, ...item }));
     } else {
-      setFilters((oldFilters) =>
-        oldFilters.filter((filter) => filter !== value)
-      );
+      const key = elem.dataset.id;
+      setFiltersData((oldData) => {
+        delete oldData[key];
+        return { ...oldData };
+      });
     }
 
     setCurrentPage(1);
   };
 
   const getCheckbox = (target) => {
-    var obj;
+    let obj;
     switch (target.tagName) {
       case "LI":
         obj = [target.querySelector("input[type='checkbox']"), "li"];
@@ -41,17 +48,16 @@ export default function SidebarComponent({
 
   const handleClick = (e) => {
     var [elem, targetType] = getCheckbox(e.target);
+
     if (targetType !== "checkbox") {
       elem.checked = !elem.checked;
     }
 
-    elem.checked === true
-      ? updateFilters(elem.dataset.id, "add")
-      : updateFilters(elem.dataset.id);
+    elem.checked === true ? updateFilters(elem, "add") : updateFilters(elem);
   };
 
   const handleClearFilters = () => {
-    setFilters([]);
+    setFiltersData({});
   };
 
   const handleOnChange = (e) => {
@@ -60,7 +66,9 @@ export default function SidebarComponent({
 
   const categoriesMap = categories.map((category) => (
     <Styles.ListItem
-      className={filters.includes(category.id) ? "checked" : ""}
+      className={
+        Object.keys(filtersData).includes(category.id) ? "checked" : ""
+      }
       onClick={(e) => handleClick(e)}
       htmlFor={category.data.name}
       key={category.id}
@@ -72,7 +80,7 @@ export default function SidebarComponent({
         type="checkbox"
         data-id={category.id}
         name={category.data.name}
-        checked={filters.includes(category.id)}
+        checked={Object.keys(filtersData).includes(category.id)}
         onChange={handleOnChange}
       />
     </Styles.ListItem>
@@ -81,7 +89,7 @@ export default function SidebarComponent({
   return (
     <Styles.FiltersWrapper>
       <h3>Filters</h3>
-      {filters.length > 0 && (
+      {Object.keys(filtersData).length > 0 && (
         <Styles.ClearFiltersBtn onClick={handleClearFilters}>
           Clear Filters
           <FaTimesCircle />

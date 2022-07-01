@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import SidebarComponent from "../../components/Sidebar/SidebarComponent";
 import ProductGridComponent from "../../components/ProductGrid/ProductGridComponent";
 import LoadingComponent from "../../components/Loading/LoadingComponent";
@@ -8,7 +9,7 @@ import { useCategories } from "../../utils/hooks/useCategories";
 import { useProducts } from "../../utils/hooks/useProducts";
 
 export default function ProductList() {
-  const [filters, setFilters] = useState([]);
+  const [filtersData, setFiltersData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [productsPerPage] = useState(12);
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,43 +17,53 @@ export default function ProductList() {
   const [productsRendered, setProductsRendered] = useState([]);
   const { dataCategories, isLoadingCategories } = useCategories();
   const { dataProducts, isLoadingProducts } = useProducts();
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  const isApiLoading = useCallback(() => {
+    return !isLoadingCategories && !isLoadingProducts;
+  }, [isLoadingCategories, isLoadingProducts]);
+
+  const filteredProducts = useCallback(() => {
+    let results = dataProducts.results;
+    if (Object.keys(filtersData).length > 0) {
+      results = dataProducts.results.filter((product) =>
+        Object.keys(filtersData).includes(product.data.category.id)
+      );
+    }
+
+    return results;
+  }, [dataProducts, filtersData]);
+
+  const productsToShow = useCallback(
+    (products) => {
+      setTotalPages(Math.ceil(products.length / productsPerPage));
+      const startIdx = (currentPage - 1) * productsPerPage;
+      const endIdx = currentPage * productsPerPage;
+      setProductsRendered(products.slice(startIdx, endIdx));
+      setIsLoading(false);
+    },
+    [productsPerPage, currentPage]
+  );
+
+  const updateParams = useCallback(() => {
+    const valueArray = Object.values(filtersData);
+
+    if (valueArray.length > 0) {
+      searchParams.set("category", valueArray);
+    }
+    setSearchParams(searchParams);
+  }, [filtersData, searchParams, setSearchParams]);
 
   useEffect(() => {
     setIsLoading(true);
-    if (!isLoadingCategories && !isLoadingProducts) {
+    if (isApiLoading()) {
       window.scrollTo(0, 0);
 
-      function filteredProducts() {
-        let results = dataProducts.results;
-        if (filters.length > 0) {
-          results = dataProducts.results.filter((product) =>
-            filters.includes(product.data.category.id)
-          );
-        }
-
-        return results;
-      }
-
-      function productsToShow(products) {
-        setTotalPages(Math.ceil(results.length / productsPerPage));
-        const startIdx = (currentPage - 1) * productsPerPage;
-        const endIdx = currentPage * productsPerPage;
-        setProductsRendered(results.slice(startIdx, endIdx));
-        setIsLoading(false);
-      }
-
+      updateParams();
       const results = filteredProducts();
-
       productsToShow(results);
     }
-  }, [
-    isLoadingCategories,
-    isLoadingProducts,
-    dataProducts,
-    filters,
-    productsPerPage,
-    currentPage,
-  ]);
+  }, [isApiLoading, filteredProducts, productsToShow, updateParams]);
 
   const onChangePagination = (products) => {
     const startIdx = (currentPage - 1) * productsPerPage;
@@ -70,9 +81,10 @@ export default function ProductList() {
           <Styles.Sidebar>
             <SidebarComponent
               categories={dataCategories.results}
-              setFilters={setFilters}
-              filters={filters}
               setCurrentPage={setCurrentPage}
+              setFiltersData={setFiltersData}
+              filtersData={filtersData}
+              searchParams={searchParams}
             />
           </Styles.Sidebar>
           <Styles.Products>
