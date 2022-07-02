@@ -1,16 +1,21 @@
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import * as Styles from "./category-card-styles";
 
 const CategoryCardComponent = ({ categoryInfo }) => {
   return (
     <Styles.StyledCard>
-      <a href={categoryInfo.href}>
-        <Styles.CardImage
-          src={categoryInfo.data.main_image.url}
-          alt={categoryInfo.data.main_image.alt}
-        />
-        <h3>{categoryInfo.data.name}</h3>
-      </a>
+      <Styles.CardImage
+        src={categoryInfo.data.main_image.url}
+        alt={categoryInfo.data.main_image.alt}
+      />
+      <Link
+        to={`/products?category=${encodeURIComponent(
+          categoryInfo.data.name.toLowerCase()
+        )}`}
+      >
+        {categoryInfo.data.name}
+      </Link>
     </Styles.StyledCard>
   );
 };

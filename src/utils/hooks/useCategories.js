@@ -3,34 +3,33 @@ import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
 import { getDataFromAPI } from "../api";
 
-export function useFeaturedBanners() {
-  const { ref: apiRef, isLoadingBanners: isApiMetadataLoading } =
+export function useCategories() {
+  const { ref: apiRef, isLoadingCategories: isApiMetadataLoading } =
     useLatestAPI();
-  const [featuredBanners, setFeaturedBanners] = useState(() => ({
-    dataBanners: {},
-    isLoadingBanners: true,
+  const [categories, setCategories] = useState(() => ({
+    dataCategories: {},
+    isLoadingCategories: true,
   }));
-
-  const handleSetBanners = ({ data, isLoading }) => {
-    setFeaturedBanners({ dataBanners: data, isLoadingBanners: isLoading });
+  const handleSetCategories = ({ data, isLoading }) => {
+    setCategories({ dataCategories: data, isLoadingCategories: isLoading });
   };
 
   useEffect(() => {
     const apiUrl = `${API_BASE_URL}/documents/search?ref=${apiRef}&q=${encodeURIComponent(
-      '[[at(document.type, "banner")]]'
-    )}&lang=en-us&pageSize=5`;
+      '[[at(document.type, "category")]]'
+    )}&lang=en-us&pageSize=30`;
+
     if (!apiRef || isApiMetadataLoading) {
       return () => {};
     }
-
     const controller = new AbortController();
 
-    getDataFromAPI(handleSetBanners, apiUrl, controller);
+    getDataFromAPI(handleSetCategories, apiUrl, controller);
 
     return () => {
       controller.abort();
     };
   }, [apiRef, isApiMetadataLoading]);
 
-  return featuredBanners;
+  return categories;
 }

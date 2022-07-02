@@ -1,25 +1,25 @@
-import "./App.css";
-import { useFeaturedBanners } from "./utils/hooks/useFeaturedBanners";
 import HeaderComponent from "./components/Header/HeaderComponent";
 import FooterComponent from "./components/Footer/FooterComponent";
 import Home from "./pages/Home";
 import ProductList from "./pages/ProductList/ProductList";
-import { useState } from "react";
+import ProductDetails from "./pages/ProductDetails/ProductDetails";
+import { Routes, Route } from "react-router-dom";
+import React from "react";
+import "./App.css";
 
 function App() {
-  const { data, isLoading } = useFeaturedBanners();
-  console.log(data, isLoading);
-
-  const [component, setComponent] = useState("home");
-  const renderComponent = {
-    home: <Home selectComponent={setComponent} />,
-    pl: <ProductList />,
-  };
+  //<Route path="/products/:category"
+  //element={<ProductList categorySlug={query.get("category")} />}/>
 
   return (
     <div className="App">
-      <HeaderComponent selectComponent={setComponent} />
-      {renderComponent[component]}
+      <HeaderComponent />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/products" element={<ProductList />} />
+        <Route path="/product/:productId" element={<ProductDetails />} />
+      </Routes>
       <FooterComponent />
     </div>
   );

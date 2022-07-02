@@ -16,6 +16,39 @@ export const StyledGrid = styled.div`
   align-items: center;
   width: 100%;
   justify-content: center;
+
+  & .styled-link {
+    font-size: 25px;
+    margin-bottom: 3rem;
+    width: 17rem;
+    height: 5rem;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 15px;
+    border: 1px solid lightgray;
+    cursor: pointer;
+    background-color: #fff;
+    text-decoration: none;
+
+    & svg {
+      display: none;
+    }
+
+    &:hover {
+      font-weight: 600;
+
+      & svg {
+        display: block;
+      }
+    }
+
+    @media screen and (max-width: 1024px) {
+      & svg {
+        display: block;
+      }
+    }
+  }
 `;
 
 export const GridHeader = styled.h2`
@@ -33,34 +66,5 @@ export const GridContainer = styled.div`
   @media screen and (max-width: 700px) {
     width: 95%;
     justify-content: center;
-  }
-`;
-
-export const StyledButton = styled.button`
-  font-size: 25px;
-  margin-bottom: 3rem;
-  width: 17rem;
-  height: 5rem;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  border-radius: 15px;
-  border: 1px solid lightgray;
-  cursor: pointer;
-
-  & svg {
-    display: none;
-  }
-
-  &:hover {
-    & svg {
-      display: block;
-    }
-  }
-
-  @media screen and (max-width: 1024px) {
-    & svg {
-      display: block;
-    }
   }
 `;

@@ -4,7 +4,7 @@ export const StyledFeaturedProducts = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  overflow: scroll;
+  overflow: hidden;
   width: 99%;
 
   & h2 {
@@ -16,7 +16,7 @@ export const StyledFeaturedProducts = styled.div`
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: center;
-    height: 28rem;
+    height: 31rem;
     margin-bottom: 7rem;
   }
 

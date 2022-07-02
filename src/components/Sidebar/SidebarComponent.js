@@ -1,48 +1,74 @@
 import PropTypes from "prop-types";
+import { FaTimesCircle } from "react-icons/fa";
 import * as Styles from "./sidebar-styles";
 
-export default function SidebarComponent({ categories, setFilters }) {
-  const updateFilters = (value, action) => {
+export default function SidebarComponent({
+  categories,
+  setCurrentPage,
+  setFiltersData,
+  filtersData,
+  searchParams,
+}) {
+  const updateFilters = (elem, action) => {
     if (action === "add") {
-      setFilters((oldFilters) => [...oldFilters, value]);
+      const key = elem.dataset.id;
+      const value = elem.name;
+      const item = {};
+      item[key] = value.toLowerCase();
+      setFiltersData((oldData) => ({ ...oldData, ...item }));
     } else {
-      setFilters((oldFilters) =>
-        oldFilters.filter((filter) => filter !== value)
-      );
+      const key = elem.dataset.id;
+      setFiltersData((oldData) => {
+        delete oldData[key];
+        return { ...oldData };
+      });
     }
+
+    setCurrentPage(1);
   };
 
   const getCheckbox = (target) => {
-    var elem;
+    let obj;
     switch (target.tagName) {
       case "LI":
-        elem = target.querySelector("input[type='checkbox']");
+        obj = [target.querySelector("input[type='checkbox']"), "li"];
         break;
       case "LABEL":
-        elem = target.parentElement.querySelector("input[type='checkbox']");
+        obj = [
+          target.parentElement.querySelector("input[type='checkbox']"),
+          "label",
+        ];
         break;
       default:
-        elem = target;
+        obj = [target, "checkbox"];
         break;
     }
-    return elem;
+    return obj;
   };
 
   const handleClick = (e) => {
-    var elem = getCheckbox(e.target);
-    elem.checked = !elem.checked;
+    var [elem, targetType] = getCheckbox(e.target);
 
-    if (elem.checked === true) {
-      elem.parentElement.classList.add("checked");
-      updateFilters(elem.dataset.id, "add");
-    } else {
-      updateFilters(elem.dataset.id);
-      elem.parentElement.classList.remove("checked");
+    if (targetType !== "checkbox") {
+      elem.checked = !elem.checked;
     }
+
+    elem.checked === true ? updateFilters(elem, "add") : updateFilters(elem);
+  };
+
+  const handleClearFilters = () => {
+    setFiltersData({});
+  };
+
+  const handleOnChange = (e) => {
+    handleClick(e);
   };
 
   const categoriesMap = categories.map((category) => (
     <Styles.ListItem
+      className={
+        Object.keys(filtersData).includes(category.id) ? "checked" : ""
+      }
       onClick={(e) => handleClick(e)}
       htmlFor={category.data.name}
       key={category.id}
@@ -54,7 +80,8 @@ export default function SidebarComponent({ categories, setFilters }) {
         type="checkbox"
         data-id={category.id}
         name={category.data.name}
-        defaultChecked={false}
+        checked={Object.keys(filtersData).includes(category.id)}
+        onChange={handleOnChange}
       />
     </Styles.ListItem>
   ));
@@ -62,6 +89,12 @@ export default function SidebarComponent({ categories, setFilters }) {
   return (
     <Styles.FiltersWrapper>
       <h3>Filters</h3>
+      {Object.keys(filtersData).length > 0 && (
+        <Styles.ClearFiltersBtn onClick={handleClearFilters}>
+          Clear Filters
+          <FaTimesCircle />
+        </Styles.ClearFiltersBtn>
+      )}
       <Styles.FiltersContainer>{categoriesMap}</Styles.FiltersContainer>
     </Styles.FiltersWrapper>
   );

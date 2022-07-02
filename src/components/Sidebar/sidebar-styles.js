@@ -13,10 +13,30 @@ export const FiltersWrapper = styled.div`
   }
 `;
 
+export const ClearFiltersBtn = styled.button`
+  border-radius: 10px;
+  margin: 30px 0;
+  width: 50%;
+  height: 40px;
+  font-size: 20px;
+  background-color: #fff;
+  border: 1px solid red;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  &:hover {
+    background-color: #ff8c8c;
+    color: #fff;
+  }
+`;
+
 export const FiltersContainer = styled.ul`
   list-style: none;
   display: flex;
   flex-direction: column;
+  padding-left: 10px;
 
   @media screen and (max-width: 1024px) {
     flex-direction: row;

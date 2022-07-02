@@ -7,6 +7,8 @@ export const StyledCard = styled.div`
 
   & a {
     text-decoration: none;
+    font-size: 20px;
+    font-weight: 600;
   }
 `;
 

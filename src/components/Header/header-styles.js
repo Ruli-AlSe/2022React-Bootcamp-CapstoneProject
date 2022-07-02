@@ -5,24 +5,24 @@ export const StyledHeader = styled.header`
   width: 100%;
   flex-direction: row;
   justify-content: space-between;
-`;
 
-export const BrandButton = styled.a`
-  margin: 25px 20px;
-  display: flex;
-  text-decoration: none;
-  cursor: pointer;
-`;
+  & .brand-button {
+    margin: 25px 20px;
+    display: flex;
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-export const BrandImage = styled.img`
-  border-radius: 30%;
-  width: 4rem;
-  margin-right: 10px;
-  height: 4rem;
-`;
+  & .brand-button .image {
+    border-radius: 30%;
+    width: 4rem;
+    margin-right: 10px;
+    height: 4rem;
+  }
 
-export const BrandName = styled.h2`
-  margin: 10px 0;
+  & .brand-button .title {
+    margin: 10px 0;
+  }
 `;
 
 export const ButtonsContainer = styled.div`

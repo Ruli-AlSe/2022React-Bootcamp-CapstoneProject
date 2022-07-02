@@ -1,18 +1,23 @@
 import SliderComponent from "../components/Slider/SliderComponent";
 import FeaturedProductsComponent from "../components/FeaturedProducts/FeaturedProductsComponent";
 import CategoryGridComponent from "../components/CategoryGrid/CategoryGridComponent";
-import { useState } from "react";
-const featuredBanners = require("../mocks/en-us/featured-banners.json");
-const productCategories = require("../mocks/en-us/product-categories.json");
-const featuredProducts = require("../mocks/en-us/featured-products.json");
+import LoadingComponent from "../components/Loading/LoadingComponent";
+import { useState, useEffect } from "react";
+import { useFeaturedBanners } from "../utils/hooks/useFeaturedBanners";
+import { useProducts } from "../utils/hooks/useProducts";
+import { useCategories } from "../utils/hooks/useCategories";
 
-const Home = ({ selectComponent }) => {
+const Home = () => {
+  const { dataBanners, isLoadingBanners } = useFeaturedBanners();
+  const { dataCategories, isLoadingCategories } = useCategories();
+  const { dataProducts, isLoadingProducts } = useProducts("featured");
   const [slideIndex, setSlideIndex] = useState(0);
   const [firstTileIdx, setFirstTileIdx] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   let lastTileIdx = firstTileIdx + 4;
-  const bannerResults = featuredBanners.results;
-  const categoryResults = productCategories.results;
-  const productResults = featuredProducts.results;
+  const bannerResults = dataBanners.results;
+  const categoryResults = dataCategories.results;
+  const productResults = dataProducts.results;
 
   const nextSlide = () => {
     if (slideIndex !== bannerResults.length - 1) {
@@ -46,25 +51,34 @@ const Home = ({ selectComponent }) => {
     lastTileIdx = firstTileIdx + 4;
   };
 
+  useEffect(() => {
+    if (!isLoadingBanners && !isLoadingCategories && !isLoadingProducts) {
+      setIsLoading(false);
+    }
+  }, [isLoadingBanners, isLoadingCategories, isLoadingProducts]);
+
   return (
     <div>
-      <SliderComponent
-        images={bannerResults}
-        prevSlide={prevSlide}
-        nextSlide={nextSlide}
-        activeBanner={slideIndex}
-      />
-      <CategoryGridComponent
-        categories={categoryResults}
-        selectComponent={selectComponent}
-      />
-      <FeaturedProductsComponent
-        products={productResults}
-        firstTileIdx={firstTileIdx}
-        lastTileIdx={lastTileIdx}
-        nextProductGrid={nextProductGrid}
-        prevProductGrid={prevProductGrid}
-      />
+      {isLoading && <LoadingComponent />}
+      {!isLoading && (
+        <>
+          <SliderComponent
+            images={bannerResults}
+            prevSlide={prevSlide}
+            nextSlide={nextSlide}
+            activeBanner={slideIndex}
+            isLoadingBanners={isLoadingBanners}
+          />
+          <CategoryGridComponent categories={categoryResults} />
+          <FeaturedProductsComponent
+            products={productResults}
+            firstTileIdx={firstTileIdx}
+            lastTileIdx={lastTileIdx}
+            nextProductGrid={nextProductGrid}
+            prevProductGrid={prevProductGrid}
+          />
+        </>
+      )}
     </div>
   );
 };

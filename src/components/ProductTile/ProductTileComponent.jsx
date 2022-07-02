@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import * as Styles from "./product-tile-styles";
 
 const ProductTileComponent = ({
   productInfo,
-  index,
-  firstTileIdx,
-  lastTileIdx,
+  index = 0,
+  firstTileIdx = 0,
+  lastTileIdx = 1,
 }) => {
   const displayStyle =
     index >= firstTileIdx && index <= lastTileIdx
@@ -19,10 +20,20 @@ const ProductTileComponent = ({
         alt={productInfo.data.mainimage.alt}
       />
       <Styles.InformationContainer>
-        <Styles.TileHeader>{productInfo.data.name}</Styles.TileHeader>
+        <Styles.TileHeader>
+          <Link className="link-product-name" to={`/product/${productInfo.id}`}>
+            {productInfo.data.name}
+          </Link>
+        </Styles.TileHeader>
         <p>{productInfo.data.category.slug}</p>
-        <p>$ {productInfo.data.price}</p>
+        <p>$ {productInfo.data.price.toFixed(2)}</p>
       </Styles.InformationContainer>
+      <Styles.ActionsContainer>
+        <Link className="view-all-link" to={`/product/${productInfo.id}`}>
+          View Details
+        </Link>
+        <Styles.AddToCartBtn>Add To Cart</Styles.AddToCartBtn>
+      </Styles.ActionsContainer>
     </Styles.StyledTile>
   );
 };
@@ -38,9 +49,9 @@ ProductTileComponent.propTypes = {
     id: PropTypes.string.isRequired,
     href: PropTypes.string.isRequired,
   }).isRequired,
-  index: PropTypes.number.isRequired,
-  firstTileIdx: PropTypes.number.isRequired,
-  lastTileIdx: PropTypes.number.isRequired,
+  index: PropTypes.number,
+  firstTileIdx: PropTypes.number,
+  lastTileIdx: PropTypes.number,
 };
 
 export default ProductTileComponent;

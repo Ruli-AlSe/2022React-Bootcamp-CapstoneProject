@@ -1,20 +1,18 @@
 import * as Styles from "./header-styles";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-const HeaderComponent = ({ selectComponent }) => {
+const HeaderComponent = () => {
   const server = "https://d3jmn01ri1fzgl.cloudfront.net";
   const path =
     "/photoadking/webp_thumbnail/5f9294c203d69_template_image_1603441858.webp";
 
-  const backHome = (comp) => {
-    selectComponent(comp);
-  };
   return (
     <Styles.StyledHeader>
-      <Styles.BrandButton onClick={() => backHome("home")}>
-        <Styles.BrandImage src={server + path} alt="Brand Logo" />
-        <h2>Company Name</h2>
-      </Styles.BrandButton>
+      <Link to={"/home"} className="brand-button">
+        <img className="image" src={server + path} alt="Brand Logo" />
+        <h2 className="title">Company Brand</h2>
+      </Link>
       <Styles.ButtonsContainer>
         <div>
           <Styles.SearchInput

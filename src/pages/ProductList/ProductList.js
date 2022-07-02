@@ -1,30 +1,76 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import SidebarComponent from "../../components/Sidebar/SidebarComponent";
 import ProductGridComponent from "../../components/ProductGrid/ProductGridComponent";
 import LoadingComponent from "../../components/Loading/LoadingComponent";
 import PaginationComponent from "../../components/Pagination/PaginationComponent";
 import * as Styles from "./product-list-styles";
-const productCategories = require("../../mocks/en-us/product-categories.json");
-const products = require("../../mocks/en-us/products.json");
+import { useCategories } from "../../utils/hooks/useCategories";
+import { useProducts } from "../../utils/hooks/useProducts";
 
 export default function ProductList() {
-  const [filters, setFilters] = useState([]);
+  const [filtersData, setFiltersData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [productsPerPage] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [productsRendered, setProductsRendered] = useState([]);
+  const { dataCategories, isLoadingCategories } = useCategories();
+  const { dataProducts, isLoadingProducts } = useProducts();
+  let [searchParams, setSearchParams] = useSearchParams();
 
-  let results = products.results;
-  if (filters.length > 0) {
-    console.log(filters);
-    results = products.results.filter((product) =>
-      filters.includes(product.data.category.id)
-    );
-  }
+  const isApiLoading = useCallback(() => {
+    return !isLoadingCategories && !isLoadingProducts;
+  }, [isLoadingCategories, isLoadingProducts]);
+
+  const filteredProducts = useCallback(() => {
+    let results = dataProducts.results;
+    if (Object.keys(filtersData).length > 0) {
+      results = dataProducts.results.filter((product) =>
+        Object.keys(filtersData).includes(product.data.category.id)
+      );
+    }
+
+    return results;
+  }, [dataProducts, filtersData]);
+
+  const productsToShow = useCallback(
+    (products) => {
+      setTotalPages(Math.ceil(products.length / productsPerPage));
+      const startIdx = (currentPage - 1) * productsPerPage;
+      const endIdx = currentPage * productsPerPage;
+      setProductsRendered(products.slice(startIdx, endIdx));
+      setIsLoading(false);
+    },
+    [productsPerPage, currentPage]
+  );
+
+  const updateParams = useCallback(() => {
+    const valueArray = Object.values(filtersData);
+
+    if (valueArray.length > 0) {
+      searchParams.set("category", valueArray);
+    }
+    setSearchParams(searchParams);
+  }, [filtersData, searchParams, setSearchParams]);
 
   useEffect(() => {
-    setTimeout(() => {
+    setIsLoading(true);
+    if (isApiLoading()) {
       window.scrollTo(0, 0);
-      setIsLoading(false);
-    }, 2000);
-  }, []);
+
+      updateParams();
+      const results = filteredProducts();
+      productsToShow(results);
+    }
+  }, [isApiLoading, filteredProducts, productsToShow, updateParams]);
+
+  const onChangePagination = (products) => {
+    const startIdx = (currentPage - 1) * productsPerPage;
+    const endIdx = currentPage * productsPerPage;
+
+    setProductsRendered(products.slice(startIdx, endIdx));
+  };
 
   return (
     <Styles.ProductListPage>
@@ -34,13 +80,32 @@ export default function ProductList() {
         <Styles.ContentContainer>
           <Styles.Sidebar>
             <SidebarComponent
-              categories={productCategories.results}
-              setFilters={setFilters}
+              categories={dataCategories.results}
+              setCurrentPage={setCurrentPage}
+              setFiltersData={setFiltersData}
+              filtersData={filtersData}
+              searchParams={searchParams}
             />
           </Styles.Sidebar>
           <Styles.Products>
-            <ProductGridComponent className="products" products={results} />
-            <PaginationComponent />
+            <PaginationComponent
+              products={productsRendered}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              onChangePagination={onChangePagination}
+            />
+            <ProductGridComponent
+              className="products"
+              products={productsRendered}
+            />
+            <PaginationComponent
+              products={productsRendered}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              onChangePagination={onChangePagination}
+            />
           </Styles.Products>
         </Styles.ContentContainer>
       )}
