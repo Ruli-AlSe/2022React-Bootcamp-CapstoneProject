@@ -10,6 +10,7 @@ import {
   addCartItem,
   getCartItems,
   updateQtyInItem,
+  getCartItemsIds,
 } from "../../redux/slices/cartSlice";
 import "react-image-gallery/styles/css/image-gallery.css";
 import * as Styles from "./product-details-styles";
@@ -22,8 +23,8 @@ export default function ProductDetails() {
   const [productInfo, setProductInfo] = useState({});
   const dispatch = useDispatch();
   const cartItems = useSelector(getCartItems);
-  let exceedLimit = false;
-  console.log("***", cartItems);
+  const cartItemsIds = useSelector(getCartItemsIds);
+  console.log("***", { cartItems, cartItemsIds });
 
   useEffect(() => {
     if (!isLoadingProduct) {
@@ -39,11 +40,25 @@ export default function ProductDetails() {
     }
   }, [isLoadingProduct, dataProduct, productInfo]);
 
+  const addToCart = (qty) => {
+    dispatch(
+      addCartItem({
+        id: productInfo.id,
+        sku: productInfo.data.sku,
+        qty: qty,
+        name: productInfo.data.name,
+        imageUrl: productInfo.data.mainimage.url,
+        imageAlt: productInfo.data.mainimage.alt,
+        price: productInfo.data.price.toFixed(2),
+      })
+    );
+  };
+
   const handleAddToCart = (event) => {
     event.preventDefault();
     const { qtyInput } = event.target.elements;
 
-    if (cartItems.length > 0) {
+    if (cartItemsIds.includes(productInfo.id)) {
       cartItems.forEach((item) => {
         const totalQty = parseInt(item.qty) + parseInt(qtyInput.value);
         if (item.id === productInfo.id) {
@@ -53,17 +68,7 @@ export default function ProductDetails() {
         }
       });
     } else {
-      dispatch(
-        addCartItem({
-          id: productInfo.id,
-          sku: productInfo.data.sku,
-          qty: qtyInput.value,
-          name: productInfo.data.name,
-          imageUrl: productInfo.data.mainimage.url,
-          imageAlt: productInfo.data.mainimage.alt,
-          price: productInfo.data.price.toFixed(2),
-        })
-      );
+      addToCart(qtyInput.value);
     }
   };
 
@@ -72,7 +77,6 @@ export default function ProductDetails() {
       {isLoading && <LoadingComponent />}
       {!isLoading && (
         <Styles.ProductDataContainer>
-          {exceedLimit && <p>this product exceeds the limit in stock</p>}
           <Styles.Container>
             <Styles.Container className="product-images">
               <Styles.Tags className="mobile">
