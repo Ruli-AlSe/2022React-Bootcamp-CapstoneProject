@@ -17,6 +17,7 @@ import * as Styles from "./product-details-styles";
 
 export default function ProductDetails() {
   const params = useParams();
+  console.log("***", params);
   const [isLoading, setIsLoading] = useState(true);
   const { dataProduct, isLoadingProduct } = useProductInfo(params.productId);
   const [productImages, setProductImages] = useState([]);
@@ -24,7 +25,6 @@ export default function ProductDetails() {
   const dispatch = useDispatch();
   const cartItems = useSelector(getCartItems);
   const cartItemsIds = useSelector(getCartItemsIds);
-  console.log("***", { cartItems, cartItemsIds });
 
   useEffect(() => {
     if (!isLoadingProduct) {

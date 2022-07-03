@@ -6,6 +6,7 @@ export const cartSlice = createSlice({
   initialState: {
     cartItems: [],
     cartItemsIds: [],
+    displayMiniCart: false,
   },
   reducers: {
     addCartItem: (state, action) => {
@@ -32,6 +33,9 @@ export const cartSlice = createSlice({
         return item;
       });
     },
+    setDisplayMiniCart: (state, action) => {
+      state.displayMiniCart = action.payload;
+    },
   },
 });
 
@@ -41,12 +45,30 @@ export const {
   removeCartItem,
   resetCart,
   updateQtyInItem,
-  setCurrentProduct,
+  setDisplayMiniCart,
 } = cartSlice.actions;
 
 // Selectors
 export const getCartItems = (state) => state.cart.cartItems;
 export const getCartItemsIds = (state) => state.cart.cartItemsIds;
+export const displayMiniCart = (state) => state.cart.displayMiniCart;
+export const getTotalItems = (state) => {
+  let total = 0;
+  state.cart.cartItems.forEach((item) => {
+    total += parseInt(item.qty);
+  });
+
+  return total;
+};
+
+export const getCartSubtotal = (state) => {
+  let total = 0;
+  state.cart.cartItems.forEach((item) => {
+    total += parseInt(item.qty) * parseFloat(item.price);
+  });
+
+  return total;
+};
 
 //Export reducer
 export default cartSlice.reducer;
