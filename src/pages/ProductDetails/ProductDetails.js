@@ -4,7 +4,13 @@ import AddToCartButton from "../../components/AddToCartButton/AddToCartButton";
 import { FaGenderless } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { useProductInfo } from "../../utils/hooks/useProductInfo";
+import {
+  addCartItem,
+  getCartItems,
+  updateQtyInItem,
+} from "../../redux/slices/cartSlice";
 import "react-image-gallery/styles/css/image-gallery.css";
 import * as Styles from "./product-details-styles";
 
@@ -14,6 +20,10 @@ export default function ProductDetails() {
   const { dataProduct, isLoadingProduct } = useProductInfo(params.productId);
   const [productImages, setProductImages] = useState([]);
   const [productInfo, setProductInfo] = useState({});
+  const dispatch = useDispatch();
+  const cartItems = useSelector(getCartItems);
+  let exceedLimit = false;
+  console.log("***", cartItems);
 
   useEffect(() => {
     if (!isLoadingProduct) {
@@ -23,18 +33,46 @@ export default function ProductDetails() {
         original: img.image.url,
         thumbnail: img.image.url,
       }));
-      console.log(dataProduct);
 
       setProductImages(images2);
       setProductInfo(dataProduct.results[0]);
     }
-  }, [isLoadingProduct, dataProduct]);
+  }, [isLoadingProduct, dataProduct, productInfo]);
+
+  const handleAddToCart = (event) => {
+    event.preventDefault();
+    const { qtyInput } = event.target.elements;
+
+    if (cartItems.length > 0) {
+      cartItems.forEach((item) => {
+        const totalQty = parseInt(item.qty) + parseInt(qtyInput.value);
+        if (item.id === productInfo.id) {
+          if (totalQty < productInfo.data.stock) {
+            dispatch(updateQtyInItem({ id: productInfo.id, qty: totalQty }));
+          }
+        }
+      });
+    } else {
+      dispatch(
+        addCartItem({
+          id: productInfo.id,
+          sku: productInfo.data.sku,
+          qty: qtyInput.value,
+          name: productInfo.data.name,
+          imageUrl: productInfo.data.mainimage.url,
+          imageAlt: productInfo.data.mainimage.alt,
+          price: productInfo.data.price.toFixed(2),
+        })
+      );
+    }
+  };
 
   return (
     <Styles.ProductDetailsPage>
       {isLoading && <LoadingComponent />}
       {!isLoading && (
         <Styles.ProductDataContainer>
+          {exceedLimit && <p>this product exceeds the limit in stock</p>}
           <Styles.Container>
             <Styles.Container className="product-images">
               <Styles.Tags className="mobile">
@@ -84,14 +122,19 @@ export default function ProductDetails() {
                 </p>
               </Styles.DescriptiveInfo>
               <Styles.ActionsContainer>
-                <Styles.Select name="items" id="items">
-                  {Array.from({ length: productInfo.data.stock }, (_, idx) => (
-                    <option key={idx} value={idx}>
-                      {idx + 1}
-                    </option>
-                  ))}
-                </Styles.Select>
-                <AddToCartButton />
+                <Styles.Form onSubmit={handleAddToCart}>
+                  <Styles.Select name="qtyInput" id="qtyInput">
+                    {Array.from(
+                      { length: productInfo.data.stock },
+                      (_, idx) => (
+                        <option key={idx} value={idx + 1}>
+                          {idx + 1}
+                        </option>
+                      )
+                    )}
+                  </Styles.Select>
+                  <AddToCartButton />
+                </Styles.Form>
               </Styles.ActionsContainer>
             </Styles.ProductInfoContainer>
           </Styles.Container>

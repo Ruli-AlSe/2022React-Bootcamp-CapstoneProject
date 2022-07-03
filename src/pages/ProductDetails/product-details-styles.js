@@ -121,12 +121,18 @@ export const PriceLabel = styled.p`
   font-size: 26px;
   font-weight: 600;
 `;
+export const Form = styled.form`
+  width: 100%;
+  padding: 20px 0;
+`;
 
 export const Select = styled.select`
   width: 3.5rem;
   font-size: 20px;
   text-align: center;
   margin-right: 20px;
+  margin-top: 10px;
+  height: 100%;
 `;
 
 export const StockLabel = styled.p`
