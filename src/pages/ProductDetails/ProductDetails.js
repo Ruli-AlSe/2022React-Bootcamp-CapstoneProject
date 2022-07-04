@@ -12,24 +12,26 @@ import {
   updateQtyInItem,
   getCartItemsIds,
 } from "../../redux/slices/cartSlice";
+import {
+  getIsLoadingPDP,
+  setIsLoadingPDP,
+} from "../../redux/slices/loadingSlice";
 import "react-image-gallery/styles/css/image-gallery.css";
 import * as Styles from "./product-details-styles";
 
 export default function ProductDetails() {
   const params = useParams();
-  console.log("***", params);
-  const [isLoading, setIsLoading] = useState(true);
   const { dataProduct, isLoadingProduct } = useProductInfo(params.productId);
   const [productImages, setProductImages] = useState([]);
   const [productInfo, setProductInfo] = useState({});
   const dispatch = useDispatch();
   const cartItems = useSelector(getCartItems);
   const cartItemsIds = useSelector(getCartItemsIds);
+  const isLoading = useSelector(getIsLoadingPDP);
 
   useEffect(() => {
     if (!isLoadingProduct) {
-      setIsLoading(false);
-
+      dispatch(setIsLoadingPDP(false));
       const images2 = dataProduct.results[0].data.images.map((img) => ({
         original: img.image.url,
         thumbnail: img.image.url,
@@ -38,7 +40,7 @@ export default function ProductDetails() {
       setProductImages(images2);
       setProductInfo(dataProduct.results[0]);
     }
-  }, [isLoadingProduct, dataProduct, productInfo]);
+  }, [isLoadingProduct, dataProduct, productInfo, dispatch]);
 
   const addToCart = (qty) => {
     dispatch(

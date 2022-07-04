@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
 import { getDataFromAPI } from "../api";
+import {
+  setIsLoadingHome,
+  getIsLoadingHome,
+} from "../../redux/slices/loadingSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export function useFeaturedBanners() {
   const { ref: apiRef, isLoadingBanners: isApiMetadataLoading } =
@@ -10,6 +15,12 @@ export function useFeaturedBanners() {
     dataBanners: {},
     isLoadingBanners: true,
   }));
+  const dispatch = useDispatch();
+  const isLoading = useSelector(getIsLoadingHome);
+
+  if (!isLoading && !featuredBanners.dataBanners.results) {
+    dispatch(setIsLoadingHome(true));
+  }
 
   const handleSetBanners = ({ data, isLoading }) => {
     setFeaturedBanners({ dataBanners: data, isLoadingBanners: isLoading });

@@ -1,23 +1,29 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getIsLoadingPLP,
+  setIsLoadingPLP,
+} from "../../redux/slices/loadingSlice";
 import SidebarComponent from "../../components/Sidebar/SidebarComponent";
 import ProductGridComponent from "../../components/ProductGrid/ProductGridComponent";
 import LoadingComponent from "../../components/Loading/LoadingComponent";
 import PaginationComponent from "../../components/Pagination/PaginationComponent";
-import * as Styles from "./product-list-styles";
 import { useCategories } from "../../utils/hooks/useCategories";
 import { useProducts } from "../../utils/hooks/useProducts";
+import * as Styles from "./product-list-styles";
 
 export default function ProductList() {
   const [filtersData, setFiltersData] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
   const [productsPerPage] = useState(12);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [productsRendered, setProductsRendered] = useState([]);
   const { dataCategories, isLoadingCategories } = useCategories();
-  const { dataProducts, isLoadingProducts } = useProducts();
+  const { dataProducts, isLoadingProducts } = useProducts({ pageType: "plp" });
   let [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(getIsLoadingPLP);
 
   const isApiLoading = useCallback(() => {
     return !isLoadingCategories && !isLoadingProducts;
@@ -40,9 +46,9 @@ export default function ProductList() {
       const startIdx = (currentPage - 1) * productsPerPage;
       const endIdx = currentPage * productsPerPage;
       setProductsRendered(products.slice(startIdx, endIdx));
-      setIsLoading(false);
+      dispatch(setIsLoadingPLP(false));
     },
-    [productsPerPage, currentPage]
+    [productsPerPage, currentPage, dispatch]
   );
 
   const updateParams = useCallback(() => {
@@ -55,7 +61,6 @@ export default function ProductList() {
   }, [filtersData, searchParams, setSearchParams]);
 
   useEffect(() => {
-    setIsLoading(true);
     if (isApiLoading()) {
       window.scrollTo(0, 0);
 

@@ -58,6 +58,7 @@ export default function SidebarComponent({
 
   const handleClearFilters = () => {
     setFiltersData({});
+    searchParams.delete("category");
   };
 
   const handleOnChange = (e) => {
