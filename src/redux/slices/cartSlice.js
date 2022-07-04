@@ -7,11 +7,21 @@ export const cartSlice = createSlice({
     cartItems: [],
     cartItemsIds: [],
     displayMiniCart: false,
+    displayNotification: false,
+    notificationData: {
+      imageUrl: "",
+      name: "",
+      qty: 0,
+      error: false,
+      errorMsg: "",
+    },
   },
   reducers: {
     addCartItem: (state, action) => {
-      state.cartItems = [...state.cartItems, action.payload];
-      state.cartItemsIds = [...state.cartItemsIds, action.payload.id];
+      state.cartItems = [...state.cartItems, action.payload.item];
+      state.cartItemsIds = [...state.cartItemsIds, action.payload.item.id];
+      state.displayNotification = true;
+      state.notificationData = action.payload.info;
     },
     removeCartItem: (state, action) => {
       state.cartItems = state.cartItems.filter(
@@ -27,14 +37,23 @@ export const cartSlice = createSlice({
     },
     updateQtyInItem: (state, action) => {
       state.cartItems = state.cartItems.map((item) => {
-        if (item.id === action.payload.id) {
-          item.qty = action.payload.qty;
+        if (item.id === action.payload.item.id) {
+          item.qty = action.payload.item.qty;
         }
         return item;
       });
+      state.displayNotification = true;
+      state.notificationData = action.payload.info;
     },
     setDisplayMiniCart: (state, action) => {
       state.displayMiniCart = action.payload;
+    },
+    setDisplayNotification: (state, action) => {
+      state.displayNotification = action.payload;
+    },
+    updateNotificationData: (state, action) => {
+      state.notificationData = action.payload;
+      state.displayNotification = true;
     },
   },
 });
@@ -46,12 +65,16 @@ export const {
   resetCart,
   updateQtyInItem,
   setDisplayMiniCart,
+  setDisplayNotification,
+  updateNotificationData,
 } = cartSlice.actions;
 
 // Selectors
 export const getCartItems = (state) => state.cart.cartItems;
 export const getCartItemsIds = (state) => state.cart.cartItemsIds;
 export const displayMiniCart = (state) => state.cart.displayMiniCart;
+export const displayNotification = (state) => state.cart.displayNotification;
+export const getNotificationData = (state) => state.cart.notificationData;
 export const getTotalItems = (state) => {
   let total = 0;
   state.cart.cartItems.forEach((item) => {
@@ -60,7 +83,6 @@ export const getTotalItems = (state) => {
 
   return total;
 };
-
 export const getCartSubtotal = (state) => {
   let total = 0;
   state.cart.cartItems.forEach((item) => {

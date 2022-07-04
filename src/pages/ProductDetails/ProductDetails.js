@@ -1,16 +1,20 @@
-import LoadingComponent from "../../components/Loading/LoadingComponent";
 import ImageGallery from "react-image-gallery";
-import AddToCartButton from "../../components/AddToCartButton/AddToCartButton";
-import { FaGenderless } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import AddToCartButton from "../../components/AddToCartButton/AddToCartButton";
+import LoadingComponent from "../../components/Loading/LoadingComponent";
+import { FaGenderless } from "react-icons/fa";
 import { useProductInfo } from "../../utils/hooks/useProductInfo";
+import NotificationComponent from "../../components/Notification/NotificationComponent";
 import {
   addCartItem,
   getCartItems,
   updateQtyInItem,
   getCartItemsIds,
+  displayNotification,
+  getNotificationData,
+  updateNotificationData,
 } from "../../redux/slices/cartSlice";
 import {
   getIsLoadingPDP,
@@ -28,9 +32,12 @@ export default function ProductDetails() {
   const cartItems = useSelector(getCartItems);
   const cartItemsIds = useSelector(getCartItemsIds);
   const isLoading = useSelector(getIsLoadingPDP);
+  const showNotification = useSelector(displayNotification);
+  const notificationData = useSelector(getNotificationData);
 
   useEffect(() => {
     if (!isLoadingProduct) {
+      window.scroll(0, 0);
       dispatch(setIsLoadingPDP(false));
       const images2 = dataProduct.results[0].data.images.map((img) => ({
         original: img.image.url,
@@ -42,36 +49,54 @@ export default function ProductDetails() {
     }
   }, [isLoadingProduct, dataProduct, productInfo, dispatch]);
 
-  const addToCart = (qty) => {
-    dispatch(
-      addCartItem({
-        id: productInfo.id,
-        sku: productInfo.data.sku,
-        qty: qty,
-        name: productInfo.data.name,
-        imageUrl: productInfo.data.mainimage.url,
-        imageAlt: productInfo.data.mainimage.alt,
-        price: productInfo.data.price.toFixed(2),
-      })
-    );
+  const addToCart = (qty, info) => {
+    const item = {
+      id: productInfo.id,
+      sku: productInfo.data.sku,
+      qty: qty,
+      name: productInfo.data.name,
+      imageUrl: productInfo.data.mainimage.url,
+      imageAlt: productInfo.data.mainimage.alt,
+      price: productInfo.data.price.toFixed(2),
+    };
+
+    dispatch(addCartItem({ item, info }));
+  };
+
+  const updateProductInCart = (qty, info) => {
+    cartItems.forEach((item) => {
+      const totalQty = parseInt(item.qty) + parseInt(qty);
+      if (item.id === productInfo.id) {
+        if (totalQty < productInfo.data.stock) {
+          const item = { id: productInfo.id, qty: totalQty };
+          dispatch(updateQtyInItem({ item, info }));
+        } else {
+          info.error = true;
+          info.errorMsg = "Product quantity exceed products in stock";
+          dispatch(updateNotificationData(info));
+        }
+      }
+    });
   };
 
   const handleAddToCart = (event) => {
     event.preventDefault();
     const { qtyInput } = event.target.elements;
+    const info = {
+      imageUrl: productInfo.data.mainimage.url,
+      name: productInfo.data.name,
+      qty: qtyInput.value,
+      error: false,
+      errorMsg: "",
+    };
 
-    if (cartItemsIds.includes(productInfo.id)) {
-      cartItems.forEach((item) => {
-        const totalQty = parseInt(item.qty) + parseInt(qtyInput.value);
-        if (item.id === productInfo.id) {
-          if (totalQty < productInfo.data.stock) {
-            dispatch(updateQtyInItem({ id: productInfo.id, qty: totalQty }));
-          }
-        }
-      });
-    } else {
-      addToCart(qtyInput.value);
-    }
+    setTimeout(() => {
+      if (cartItemsIds.includes(productInfo.id)) {
+        updateProductInCart(qtyInput.value, info);
+      } else {
+        addToCart(qtyInput.value, info);
+      }
+    }, 1000);
   };
 
   return (
@@ -79,6 +104,9 @@ export default function ProductDetails() {
       {isLoading && <LoadingComponent />}
       {!isLoading && (
         <Styles.ProductDataContainer>
+          {showNotification && (
+            <NotificationComponent data={notificationData} />
+          )}
           <Styles.Container>
             <Styles.Container className="product-images">
               <Styles.Tags className="mobile">
