@@ -15,7 +15,7 @@ export default function MiniCart() {
   const subtotal = useSelector(getCartSubtotal);
 
   const listItems = cartItems.map((item) => (
-    <div className="productrow">
+    <div className="productrow" key={item.id}>
       <Link className="mcprodimg" to={`/product/${item.id}`}>
         <div className="img-ph-wrapper ">
           <img
@@ -58,7 +58,6 @@ export default function MiniCart() {
                 totalItems > 1 ? "items" : "item"
               } in your cart`}
             </h3>
-            <Link to="/cart">View all items &gt;</Link>
           </div>
           <div className="mcprodcont">{listItems}</div>
           <div className="mccarttotal">
@@ -70,7 +69,11 @@ export default function MiniCart() {
             </div>
           </div>
           <div className="mccta">
-            <Link to="/cart" className="btn btn-primary">
+            <Link
+              to="/cart"
+              className="btn btn-primary"
+              onClick={() => dispatch(setDisplayMiniCart(false))}
+            >
               view cart &amp; check out
             </Link>
           </div>

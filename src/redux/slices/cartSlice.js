@@ -22,18 +22,22 @@ export const cartSlice = createSlice({
       state.cartItemsIds = [...state.cartItemsIds, action.payload.item.id];
       state.displayNotification = true;
       state.notificationData = action.payload.info;
+      localStorage.setItem("products", JSON.stringify(state.cartItems));
     },
     removeCartItem: (state, action) => {
+      console.log("** slice", action.payload.id);
       state.cartItems = state.cartItems.filter(
         (item) => item.id !== action.payload.id
       );
       state.cartItemsIds = state.cartItemsIds.filter(
         (id) => id !== action.payload.id
       );
+      localStorage.setItem("products", JSON.stringify(state.cartItems));
     },
     resetCart: (state) => {
       state.cartItems = [];
       state.cartItemsIds = [];
+      localStorage.setItem("products", JSON.stringify([]));
     },
     updateQtyInItem: (state, action) => {
       state.cartItems = state.cartItems.map((item) => {
@@ -42,8 +46,11 @@ export const cartSlice = createSlice({
         }
         return item;
       });
-      state.displayNotification = true;
-      state.notificationData = action.payload.info;
+      if (action.payload.info) {
+        state.displayNotification = true;
+        state.notificationData = action.payload.info;
+      }
+      localStorage.setItem("products", JSON.stringify(state.cartItems));
     },
     setDisplayMiniCart: (state, action) => {
       state.displayMiniCart = action.payload;
@@ -54,6 +61,9 @@ export const cartSlice = createSlice({
     updateNotificationData: (state, action) => {
       state.notificationData = action.payload;
       state.displayNotification = true;
+    },
+    loadOldProducts: (state, action) => {
+      state.cartItems = action.payload;
     },
   },
 });
@@ -67,6 +77,7 @@ export const {
   setDisplayMiniCart,
   setDisplayNotification,
   updateNotificationData,
+  loadOldProducts,
 } = cartSlice.actions;
 
 // Selectors

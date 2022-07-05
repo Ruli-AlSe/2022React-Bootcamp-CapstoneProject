@@ -58,6 +58,7 @@ export default function ProductDetails() {
       imageUrl: productInfo.data.mainimage.url,
       imageAlt: productInfo.data.mainimage.alt,
       price: productInfo.data.price.toFixed(2),
+      stock: productInfo.data.stock,
     };
 
     dispatch(addCartItem({ item, info }));

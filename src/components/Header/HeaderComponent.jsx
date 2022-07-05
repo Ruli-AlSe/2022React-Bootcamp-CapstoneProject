@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   displayMiniCart,
   setDisplayMiniCart,
   getTotalItems,
+  loadOldProducts,
+  getCartItems,
 } from "../../redux/slices/cartSlice";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import MiniCart from "../Cart/MiniCart";
@@ -16,11 +19,23 @@ const HeaderComponent = () => {
   const dispatch = useDispatch();
   const showMinicart = useSelector(displayMiniCart);
   const totalItems = useSelector(getTotalItems);
+  const cartItems = useSelector(getCartItems);
 
-  const renderMiniCart = (e, flag) => {
-    console.log(e);
+  const renderMiniCart = (flag) => {
     dispatch(setDisplayMiniCart(flag));
   };
+
+  useEffect(() => {
+    function loadFromLocalStorage() {
+      const stateStr = localStorage.getItem("products");
+      const products = stateStr ? JSON.parse(stateStr) : undefined;
+
+      if (products && cartItems.length === 0) {
+        dispatch(loadOldProducts(products));
+      }
+    }
+    loadFromLocalStorage();
+  }, [cartItems.length, dispatch]);
 
   return (
     <Styles.StyledHeader>
@@ -36,7 +51,8 @@ const HeaderComponent = () => {
         <Link
           to={"/cart"}
           className="cart-nav-link"
-          onMouseEnter={(e) => renderMiniCart(e, true)}
+          onMouseEnter={(e) => renderMiniCart(true)}
+          onClick={() => renderMiniCart(false)}
         >
           <FaShoppingCart />
           {totalItems > 0 && (
