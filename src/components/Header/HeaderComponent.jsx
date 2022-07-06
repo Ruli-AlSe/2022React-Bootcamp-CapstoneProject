@@ -9,7 +9,7 @@ import {
   getCartItems,
 } from "../../redux/slices/cartSlice";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
-import MiniCart from "../Cart/MiniCart";
+import MiniCart from "../MiniCart/MiniCart";
 import * as Styles from "./header-styles";
 
 const HeaderComponent = () => {
