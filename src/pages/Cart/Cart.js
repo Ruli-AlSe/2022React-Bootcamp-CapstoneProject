@@ -84,7 +84,7 @@ export default function Cart() {
           />
           <span>Checkout</span>
         </div>
-        <Link to="/guestCheckout" className="guest-checkout">
+        <Link to="/guest-checkout" className="guest-checkout">
           checkout as guest
         </Link>
       </Styles.CheckoutBox>
