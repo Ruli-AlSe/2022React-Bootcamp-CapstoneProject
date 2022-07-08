@@ -1,10 +1,21 @@
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
-import { getCartItems, getCartSubtotal } from "../../redux/slices/cartSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import {
+  getCartItems,
+  getCartSubtotal,
+  updateQtyInItem,
+  displayNotification,
+  setDisplayNotification,
+  resetCart,
+} from "../../redux/slices/cartSlice";
+import { addOrder, getOrders } from "../../redux/slices/orderSlice";
 import { Link } from "react-router-dom";
+import NotificationComponent from "../../components/Notification/NotificationComponent";
 import * as Styles from "./checkout-styles";
 
 export default function Checkout() {
+  const showNotification = useSelector(displayNotification);
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -12,14 +23,45 @@ export default function Checkout() {
   const cartItems = useSelector(getCartItems);
   const subtotal = useSelector(getCartSubtotal);
   const taxes = subtotal * 0.16;
+  const orders = useSelector(getOrders);
+  const [notificationData, setNotificationData] = useState({});
+  console.log("****", orders);
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
   const onSubmit = (data) => {
-    console.log(data);
+    const randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    const uniqid = randLetter + Date.now();
+    const today = new Date();
+    const order = {
+      id: uniqid,
+      date: today.toString(),
+      customerInfo: data,
+      products: cartItems,
+      total: subtotal + taxes,
+    };
+    setNotificationData({
+      notificationType: "purchase",
+      message: `Your purchase has been saved with ID: ${uniqid}`,
+    });
+    dispatch(addOrder(order));
+    dispatch(setDisplayNotification(true));
+    dispatch(resetCart());
+    reset();
   };
+
+  const updateProductsInCart = (event, product) => {
+    event.preventDefault();
+    const inputQty = event.target.value;
+
+    const item = { id: product.id, qty: inputQty };
+    dispatch(updateQtyInItem({ item }));
+  };
+
   const itemsRow = cartItems.map((item) => (
     <Styles.ProductRow key={item.id}>
       <div className="product-info">
@@ -29,10 +71,14 @@ export default function Checkout() {
         </Link>
       </div>
       <Styles.ProductPrice>
-        <select id="inputQty" defaultValue={parseInt(item.qty)}>
-          {Array.from({ length: parseInt(item.stock) + 1 }, (_, idx) => (
-            <option key={idx} value={idx}>
-              {idx}
+        <select
+          id="inputQty"
+          defaultValue={parseInt(item.qty)}
+          onChange={(event) => updateProductsInCart(event, item)}
+        >
+          {Array.from({ length: parseInt(item.stock) }, (_, idx) => (
+            <option key={idx} value={idx + 1}>
+              {idx + 1}
             </option>
           ))}
         </select>
@@ -51,10 +97,9 @@ export default function Checkout() {
     pattern: "Should contains only numbers",
   };
 
-  console.log("**** errors", errors);
-
   return (
     <Styles.CheckoutWrapper>
+      {showNotification && <NotificationComponent data={notificationData} />}
       <h1>Checkout</h1>
       <Styles.MainContainer>
         <Styles.FormContainer>

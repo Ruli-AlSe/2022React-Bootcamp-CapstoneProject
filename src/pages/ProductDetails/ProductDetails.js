@@ -72,8 +72,8 @@ export default function ProductDetails() {
           const item = { id: productInfo.id, qty: totalQty };
           dispatch(updateQtyInItem({ item, info }));
         } else {
-          info.error = true;
-          info.errorMsg = "Product quantity exceed products in stock";
+          info.notificationType = "error";
+          info.message = "Product quantity exceed products in stock";
           dispatch(updateNotificationData(info));
         }
       }
@@ -84,11 +84,11 @@ export default function ProductDetails() {
     event.preventDefault();
     const { qtyInput } = event.target.elements;
     const info = {
+      notificationType: "a2c",
       imageUrl: productInfo.data.mainimage.url,
       name: productInfo.data.name,
       qty: qtyInput.value,
-      error: false,
-      errorMsg: "",
+      message: "",
     };
 
     setTimeout(() => {

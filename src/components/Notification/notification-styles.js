@@ -41,6 +41,10 @@ export const CloseButton = styled.button`
     background-color: #d60a0a;
   }
 
+  &.purchase {
+    background-color: #11a053;
+  }
+
   @media screen and (max-width: 800px) {
     display: none;
   }
@@ -58,6 +62,10 @@ export const Indicator = styled.div`
 
   &.error {
     background-color: #d60a0a;
+  }
+
+  &.purchase {
+    background-color: #11a053;
   }
 
   @media screen and (max-width: 580px) {

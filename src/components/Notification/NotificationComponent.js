@@ -10,10 +10,13 @@ export default function NotificationComponent({ data }) {
   const closeNotification = () => {
     dispatch(setDisplayNotification(false));
   };
-  const indicatorText = data.error
-    ? "Something went wrong"
-    : `${data.qty} ${data.qty > 1 ? "items" : "item"} added to your cart`;
-  const onSuccessNotification = (
+  const notificationType = {
+    error: "Something went wrong",
+    a2c: `${data.qty} ${data.qty > 1 ? "items" : "item"} added to your cart`,
+    purchase: "Thank you for your purchase",
+  };
+  const indicatorText = notificationType[data.notificationType];
+  const onProductAdded = (
     <>
       <Styles.BlockWrapper>
         <img src={data.imageUrl} alt={data.name} />
@@ -35,14 +38,14 @@ export default function NotificationComponent({ data }) {
       </Styles.ButtonContainer>
     </>
   );
-  const onErrorNotification = (
+  const otherNotification = (
     <Styles.MessageContainer>
       <Styles.BlockWrapper>
-        <h3>{data.errorMsg}</h3>
+        <h3>{data.message}</h3>
       </Styles.BlockWrapper>
       <Styles.ContinueShoppingBtn onClick={closeNotification}>
         <FaArrowLeft />
-        continue shopping
+        {data.notificationType === "purchase" ? "close" : "continue shopping"}
       </Styles.ContinueShoppingBtn>
     </Styles.MessageContainer>
   );
@@ -52,15 +55,15 @@ export default function NotificationComponent({ data }) {
       <Styles.ModalModule>
         <Styles.CloseButton
           onClick={closeNotification}
-          className={data.error ? "error" : ""}
+          className={data.notificationType}
         >
           <FaRegWindowClose />
         </Styles.CloseButton>
-        <Styles.Indicator className={data.error ? "error" : ""}>
+        <Styles.Indicator className={data.notificationType}>
           {indicatorText}
         </Styles.Indicator>
         <Styles.PurchaseSummary>
-          {data.error ? onErrorNotification : onSuccessNotification}
+          {data.notificationType === "a2c" ? onProductAdded : otherNotification}
         </Styles.PurchaseSummary>
       </Styles.ModalModule>
     </Styles.ComponentOverlay>
