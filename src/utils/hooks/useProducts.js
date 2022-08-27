@@ -2,14 +2,33 @@ import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
 import { getDataFromAPI } from "../api";
+import {
+  setIsLoadingHome,
+  setIsLoadingPLP,
+  getIsLoadingHome,
+  getIsLoadingPLP,
+} from "../../redux/slices/loadingSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-export function useProducts(productType = "general") {
+export function useProducts({ productType = "general", pageType = "home" }) {
   const { ref: apiRef, isLoadingProducts: isApiMetadataLoading } =
     useLatestAPI();
   const [products, setProducts] = useState(() => ({
     dataProducts: {},
     isLoadingProducts: true,
   }));
+  const dispatch = useDispatch();
+  const isLoadingHome = useSelector(getIsLoadingHome);
+  const isLoadingPLP = useSelector(getIsLoadingPLP);
+  const isLoading = pageType === "home" ? isLoadingHome : isLoadingPLP;
+
+  if (!isLoading && !products.dataProducts.results) {
+    if (pageType === "home") {
+      dispatch(setIsLoadingHome(true));
+    } else {
+      dispatch(setIsLoadingPLP(true));
+    }
+  }
 
   const handleSetProducts = ({ data, isLoading }) => {
     setProducts({ dataProducts: data, isLoadingProducts: isLoading });

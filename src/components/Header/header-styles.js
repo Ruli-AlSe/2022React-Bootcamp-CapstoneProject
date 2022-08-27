@@ -23,15 +23,56 @@ export const StyledHeader = styled.header`
   & .brand-button .title {
     margin: 10px 0;
   }
+
+  & .cart-nav-link {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background-color: #fff;
+    cursor: pointer;
+
+    & svg {
+      width: 30px;
+      height: 30px;
+      color: gray;
+      padding-bottom: 8px;
+    }
+
+    & .cart-badge-container {
+      height: 0;
+      position: relative;
+      z-index: 2;
+      top: -7rem;
+      left: 10px;
+
+      & .cart-badge {
+        background-color: #0096d6;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        box-sizing: content-box;
+        color: #fff;
+        display: inline-block;
+        font-size: 0.75rem;
+        height: 20px;
+        left: 17px;
+        line-height: 21px;
+        min-width: 19px;
+        padding-left: 1px;
+        position: relative;
+        text-align: center;
+      }
+    }
+  }
 `;
 
 export const ButtonsContainer = styled.div`
   margin: 25px 0;
   margin-right: 50px;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   width: 25%;
   line-height: 76px;
+  align-items: center;
 
   @media screen and (max-width: 1230px) {
     width: 35%;
@@ -64,22 +105,11 @@ export const SearchButton = styled.button`
   height: 30px;
   border: 0;
   background-color: white;
+  cursor: pointer;
+  margin-right: 30px;
 
   & svg {
     width: 25px;
     height: 25px;
-  }
-`;
-
-export const CartButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border: 0;
-  background-color: #fff;
-
-  & svg {
-    width: 25px;
-    height: 25px;
-    color: gray;
   }
 `;

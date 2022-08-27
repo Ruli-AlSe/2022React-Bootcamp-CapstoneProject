@@ -3,21 +3,29 @@ import FeaturedProductsComponent from "../components/FeaturedProducts/FeaturedPr
 import CategoryGridComponent from "../components/CategoryGrid/CategoryGridComponent";
 import LoadingComponent from "../components/Loading/LoadingComponent";
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useFeaturedBanners } from "../utils/hooks/useFeaturedBanners";
 import { useProducts } from "../utils/hooks/useProducts";
 import { useCategories } from "../utils/hooks/useCategories";
+import {
+  getIsLoadingHome,
+  setIsLoadingHome,
+} from "../redux/slices/loadingSlice";
 
 const Home = () => {
   const { dataBanners, isLoadingBanners } = useFeaturedBanners();
   const { dataCategories, isLoadingCategories } = useCategories();
-  const { dataProducts, isLoadingProducts } = useProducts("featured");
+  const { dataProducts, isLoadingProducts } = useProducts({
+    productType: "featured",
+  });
   const [slideIndex, setSlideIndex] = useState(0);
   const [firstTileIdx, setFirstTileIdx] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   let lastTileIdx = firstTileIdx + 4;
   const bannerResults = dataBanners.results;
   const categoryResults = dataCategories.results;
   const productResults = dataProducts.results;
+  const dispatch = useDispatch();
+  const isLoading = useSelector(getIsLoadingHome);
 
   const nextSlide = () => {
     if (slideIndex !== bannerResults.length - 1) {
@@ -53,9 +61,9 @@ const Home = () => {
 
   useEffect(() => {
     if (!isLoadingBanners && !isLoadingCategories && !isLoadingProducts) {
-      setIsLoading(false);
+      dispatch(setIsLoadingHome(false));
     }
-  }, [isLoadingBanners, isLoadingCategories, isLoadingProducts]);
+  }, [isLoadingBanners, isLoadingCategories, isLoadingProducts, dispatch]);
 
   return (
     <div>

@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../constants";
 import { useLatestAPI } from "./useLatestAPI";
 import { getDataFromAPI } from "../api";
+import {
+  setIsLoadingPDP,
+  getIsLoadingPDP,
+} from "../../redux/slices/loadingSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export function useProductInfo(productId) {
   const { ref: apiRef, isLoadingProducts: isApiMetadataLoading } =
@@ -10,6 +15,12 @@ export function useProductInfo(productId) {
     dataProduct: {},
     isLoadingProduct: true,
   }));
+  const dispatch = useDispatch();
+  const isLoading = useSelector(getIsLoadingPDP);
+
+  if (!isLoading && !productInfo.dataProduct.results) {
+    dispatch(setIsLoadingPDP(true));
+  }
 
   const handleSetProductInfo = ({ data, isLoading }) => {
     setProductInfo({ dataProduct: data, isLoadingProduct: isLoading });
